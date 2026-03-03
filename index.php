@@ -53,7 +53,7 @@ session_start();
             <p class="lead mb-4">Trusted doctors at your fingertips. Book appointments and online consultations instantly.</p>
             <div>
                 <a href="register.php" class="btn btn-lg btn-accent me-2">Book Appointment</a>
-                <a href="login.php" class="btn btn-lg btn-outline-primary">See How It Works</a>
+
             </div>
         </div>
     </header>
