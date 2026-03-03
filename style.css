@@ -1,0 +1,267 @@
+/* ========== Custom styles for Doctor Appointment application ========== */
+
+/* ---------- Color palette (CSS variables) ---------- */
+:root {
+    /* palette inspired by  Healthcare UI (soft blue/teal) */
+    --primary-color: #4a80f0;       /* soft blue */
+    --secondary-color: #50c7c7;     /* teal/light aqua */
+    --accent-color: #67e8f9;        /* accent cyan */
+    --light-bg: #f9fcff;            /* very light blue-white */
+    --dark-bg: #2c3e50;             /* deep blue for footer */
+    --text-color: #2c3e50;          /* dark text */
+}
+
+/* ---------- Global page rules ---------- */
+body {
+    padding-top: 56px;               /* offset for fixed navbar */
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-color);
+}
+
+/* ---------- Navigation bar ---------- */
+.navbar {
+    background-color: var(--primary-color) !important;
+}
+
+.navbar .nav-link {
+    color: #ecf0f1 !important;
+    transition: color 0.2s;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: var(--secondary-color) !important;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+/* ---------- Hero section ---------- */
+.hero {
+    /* softer gradient with a hint of warmth for friendly feel */
+    background: linear-gradient(135deg, #f5f9ff 0%, #e0f7fa 100%);
+    height: auto;
+    min-height: 65vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 5rem 2rem;
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+    font-weight: 700;
+}
+
+.hero .lead {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: #555;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero > .container > p:first-child {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hero .container {
+    max-width: 750px;
+}
+
+.hero .btn {
+    padding: 0.875rem 2.5rem;
+    font-size: 1.05rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin: 0.75rem;
+}
+
+.hero .btn-accent {
+    box-shadow: 0 4px 15px rgba(80, 199, 199, 0.3);
+}
+
+.hero .btn-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(80, 199, 199, 0.4);
+}
+
+.hero .btn-outline-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(74, 128, 240, 0.2);
+}
+
+/* ---------- Cards & service elements ---------- */
+.service-card,
+.feature-box,
+.feature-item {
+    /* slightly off-white card background for less harsh contrast */
+    background: #fdfdfd;
+    border-radius: 0.75rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card {
+    border: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.service-card:hover,
+.feature-item:hover,
+.feature-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+}
+
+.bg-accent {
+    background-color: var(--secondary-color) !important;
+}
+
+.text-light .stretched-link {
+    color: inherit;
+}
+
+/* service-card titles */
+.service-card h5 {
+    color: var(--primary-color);
+}
+.service-card.bg-accent h5 {
+    color: #fff;
+}
+
+/* alternate list-oriented feature items */
+.feature-item {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.feature-item i {
+    min-width: 4rem;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .feature-item {
+        padding: 1.5rem 2rem;
+    }
+}
+
+/* ---------- Buttons ---------- */
+.btn-accent {
+    background-color: var(--secondary-color);
+    color: #fff;
+    border: none;
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-success {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.btn-success:hover {
+    background-color: #229954;
+    border-color: #229954;
+}
+
+/* ---------- Sections ---------- */
+#about {
+    /* professional neutral gray background */
+    background: #f5f5f5;
+    color: var(--text-color);
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+#about .text-muted {
+    color: #6c757d !important;
+}
+
+#about .container {
+    background: #fff;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+section#contact {
+    background: linear-gradient(135deg, #ffffff 0%, #eaf6ff 100%);
+}
+section#contact a {
+    text-decoration: none;
+}
+
+/* ---------- Footer ---------- */
+footer {
+    font-size: 0.9rem;
+    background-color: var(--dark-bg);
+    color: #ecf0f1;
+}
+footer a {
+    color: #bdc3c7;
+}
+footer a:hover {
+    color: #fff;
+}
+
+/* ---------- Utility ---------- */
+.card h5 {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+@media (min-width: 768px) {
+    .feature-item {
+        padding: 1.5rem 2rem;
+    }
+}
+
+/* about/features section boxes */
+.feature-box {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 1rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    height: 100%;
+}
+
+.feature-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.feature-box i {
+    color: var(--secondary-color);
+}
+
+.feature-box h5 {
+    margin-bottom: .5rem;
+}
+
+.bg-light {
+    background-color: var(--light-bg) !important;
+}
