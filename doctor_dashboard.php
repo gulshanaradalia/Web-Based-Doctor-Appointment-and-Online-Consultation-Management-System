@@ -27,6 +27,23 @@ if (isset($_GET['action'], $_GET['id']) && in_array($_GET['action'], ['approve',
     $stmt->execute();
 
     if ($stmt->affected_rows > 0) {
+        // Get appointment details for confirmation
+        $stmt2 = $conn->prepare("SELECT patient_id FROM appointments WHERE id = ?");
+        $stmt2->bind_param('i', $appointment_id);
+        $stmt2->execute();
+        $result = $stmt2->get_result();
+        $appt = $result->fetch_assoc();
+        $stmt2->close();
+
+        // Create confirmation record if approved
+        if ($status === 'approved' && $appt) {
+            $confirmation_status = 'notification_sent';
+            $stmt3 = $conn->prepare("INSERT INTO appointment_confirmations (appointment_id, patient_id, confirmation_status) VALUES (?, ?, ?)");
+            $stmt3->bind_param('iis', $appointment_id, $appt['patient_id'], $confirmation_status);
+            $stmt3->execute();
+            $stmt3->close();
+        }
+
         $message = "Appointment ".($status === 'approved' ? 'approved' : 'rejected')." successfully.";
     } else {
         $message = "Unable to update appointment status. It may have been updated already.";

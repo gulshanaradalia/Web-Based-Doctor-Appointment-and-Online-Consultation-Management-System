@@ -17,13 +17,33 @@ require_once "db.php";
 
 $patient_id = $_SESSION['user_id'];
 
-// Fetch patient's appointments
-$stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, u.name AS doctor_name, u.specialty FROM appointments a JOIN users u ON a.doctor_id = u.id WHERE a.patient_id = ? ORDER BY a.slot_time DESC");
+// Fetch patient's appointments with confirmation status
+$stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, u.name AS doctor_name, u.specialty, 
+                        ac.id as confirmation_id, ac.confirmation_status 
+                        FROM appointments a 
+                        JOIN users u ON a.doctor_id = u.id 
+                        LEFT JOIN appointment_confirmations ac ON a.id = ac.appointment_id 
+                        WHERE a.patient_id = ? 
+                        ORDER BY a.slot_time DESC");
 $stmt->bind_param('i', $patient_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $appointments = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
+
+// Fetch pending confirmations
+$confirm_stmt = $conn->prepare("SELECT ac.id, ac.appointment_id, a.slot_time, u.name AS doctor_name, u.specialty
+                               FROM appointment_confirmations ac
+                               JOIN appointments a ON ac.appointment_id = a.id
+                               JOIN users u ON a.doctor_id = u.id
+                               WHERE ac.patient_id = ? AND ac.confirmation_status IN ('notification_sent', 'pending')
+                               ORDER BY a.slot_time ASC");
+$confirm_stmt->bind_param('i', $patient_id);
+$confirm_stmt->execute();
+$confirm_result = $confirm_stmt->get_result();
+$pending_confirmations = $confirm_result->fetch_all(MYSQLI_ASSOC);
+$confirm_stmt->close();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -60,6 +80,29 @@ $stmt->close();
         </div>
     </div>
 
+    <?php if (!empty($pending_confirmations)): ?>
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-10">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">⏳ Pending Confirmations</h5>
+                <p class="mb-0">You have <?php echo count($pending_confirmations); ?> appointment(s) waiting for your confirmation.</p>
+                <hr>
+                <?php foreach ($pending_confirmations as $confirm): ?>
+                    <div class="mb-3">
+                        <strong><?php echo htmlspecialchars($confirm['doctor_name']); ?></strong> (<?php echo htmlspecialchars($confirm['specialty']); ?>)
+                        <br>
+                        <small class="text-muted">Slot: <?php echo htmlspecialchars((new DateTime($confirm['slot_time']))->format('Y-m-d H:i')); ?></small>
+                        <br>
+                        <a href="confirm_appointment.php?id=<?php echo $confirm['confirmation_id']; ?>" class="btn btn-sm btn-success mt-2">Confirm Appointment</a>
+                    </div>
+                    <?php if ($confirm !== end($pending_confirmations)): ?><hr><?php endif; ?>
+                <?php endforeach; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <div class="row justify-content-center mt-5">
         <div class="col-lg-10">
             <h3 class="mb-4">Your Appointments</h3>
@@ -75,6 +118,7 @@ $stmt->close();
                                 <th>Specialty</th>
                                 <th>Slot</th>
                                 <th>Status</th>
+                                <th>Confirmation</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -88,6 +132,19 @@ $stmt->close();
                                         <span class="badge bg-<?php echo $apt['status'] === 'approved' ? 'success' : ($apt['status'] === 'pending' ? 'warning' : 'danger'); ?>">
                                             <?php echo ucfirst($apt['status']); ?>
                                         </span>
+                                    </td>
+                                    <td>
+                                        <?php if ($apt['confirmation_id']): ?>
+                                            <span class="badge bg-<?php echo $apt['confirmation_status'] === 'confirmed' ? 'success' : 'info'; ?>">
+                                                <?php echo ucfirst(str_replace('_', ' ', $apt['confirmation_status'])); ?>
+                                            </span>
+                                            <?php if ($apt['confirmation_status'] !== 'confirmed'): ?>
+                                                <br>
+                                                <a href="confirm_appointment.php?id=<?php echo $apt['confirmation_id']; ?>" class="btn btn-sm btn-primary mt-2">Confirm</a>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">No confirmation yet</span>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
