@@ -58,6 +58,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
+
+// Auto redirect if success
+if ($message && !$errors) {
+    header("refresh:3;url=login.php");
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,30 +102,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <?php if ($message): ?>
             <div class="alert alert-success">
-                <?php echo clean($message); ?><br>
-                <strong>Reset URL:</strong> <a href="<?php echo clean($resetLink); ?>"><?php echo clean($resetLink); ?></a>
+                <strong>✓ <?php echo clean($message); ?></strong><br>
+                <small>Redirecting to login in 3 seconds...</small>
             </div>
         <?php endif; ?>
 
-        <form method="POST" novalidate>
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input class="form-control" type="email" name="email" value="<?php echo clean($_POST['email'] ?? ''); ?>" required>
-            </div>
+        <?php if (!$message): ?>
+            <form method="POST" novalidate>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" type="email" name="email" value="<?php echo clean($_POST['email'] ?? ''); ?>" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">New Password</label>
-                <input class="form-control" type="password" name="password" required>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">New Password</label>
+                    <input class="form-control" type="password" name="password" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Confirm new password</label>
-                <input class="form-control" type="password" name="confirm_password" required>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm new password</label>
+                    <input class="form-control" type="password" name="confirm_password" required>
+                </div>
 
-            <button class="btn btn-dark w-100">Reset Password</button>
-            <div class="text-center mt-3"><a href="login.php" class="text-decoration-none">Back to Login</a></div>
-        </form>
+                <button class="btn btn-dark w-100">Reset Password</button>
+                <div class="text-center mt-3"><a href="login.php" class="text-decoration-none">Back to Login</a></div>
+            </form>
+        <?php endif; ?>
     </div>
 </body>
 
