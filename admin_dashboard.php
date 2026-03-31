@@ -15,13 +15,19 @@ if($_SESSION["role"] != "admin"){
 
 require_once "db.php";
 
-// Fetch all appointments
-$stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, p.name AS patient_name, d.name AS doctor_name FROM appointments a JOIN users p ON a.patient_id = p.id JOIN users d ON a.doctor_id = d.id ORDER BY a.slot_time DESC");
+// Fetch all appointments with confirmation status
+$stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, p.name AS patient_name, d.name AS doctor_name, 
+                        ac.confirmation_status
+                        FROM appointments a 
+                        JOIN users p ON a.patient_id = p.id 
+                        JOIN users d ON a.doctor_id = d.id 
+                        LEFT JOIN appointment_confirmations ac ON a.id = ac.appointment_id
+                        ORDER BY a.slot_time DESC");
 $stmt->execute();
 $result = $stmt->get_result();
 $appointments = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
-
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,6 +70,7 @@ $stmt->close();
                         <th>Doctor</th>
                         <th>Slot</th>
                         <th>Status</th>
+                        <th>Confirmation</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,6 +84,15 @@ $stmt->close();
                                 <span class="badge bg-<?php echo $apt['status'] === 'approved' ? 'success' : ($apt['status'] === 'pending' ? 'warning' : 'danger'); ?>">
                                     <?php echo ucfirst($apt['status']); ?>
                                 </span>
+                            </td>
+                            <td>
+                                <?php if ($apt['confirmation_status']): ?>
+                                    <span class="badge bg-<?php echo $apt['confirmation_status'] === 'confirmed' ? 'success' : 'info'; ?>">
+                                        <?php echo ucfirst(str_replace('_', ' ', $apt['confirmation_status'])); ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">No confirmation</span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
