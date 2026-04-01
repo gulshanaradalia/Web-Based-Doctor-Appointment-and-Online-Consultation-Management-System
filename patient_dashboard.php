@@ -64,6 +64,7 @@ $confirm_stmt->close();
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
                 <li class="nav-item"><a class="nav-link" href="doctor_search.php">Search Doctors</a></li>
                 <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
             </ul>
