@@ -16,17 +16,24 @@ require_once 'db.php';
 $patient_id = $_SESSION['user_id'];
 $message = '';
 $error = '';
+$confirmation = null;
 
-// Get confirmation ID from URL
 $confirmation_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($confirmation_id > 0) {
-    // Fetch confirmation details
-    $stmt = $conn->prepare("SELECT ac.id, ac.appointment_id, ac.confirmation_status, a.slot_time, u.name AS doctor_name, u.specialty 
-                           FROM appointment_confirmations ac 
-                           JOIN appointments a ON ac.appointment_id = a.id 
-                           JOIN users u ON a.doctor_id = u.id 
-                           WHERE ac.id = ? AND ac.patient_id = ?");
+    $stmt = $conn->prepare("SELECT 
+                                ac.id,
+                                ac.appointment_id,
+                                ac.confirmation_status,
+                                ac.confirmed_at,
+                                a.slot_time,
+                                a.status AS appointment_status,
+                                u.name AS doctor_name,
+                                u.specialty
+                            FROM appointment_confirmations ac
+                            JOIN appointments a ON ac.appointment_id = a.id
+                            JOIN users u ON a.doctor_id = u.id
+                            WHERE ac.id = ? AND ac.patient_id = ?");
     $stmt->bind_param('ii', $confirmation_id, $patient_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -35,31 +42,40 @@ if ($confirmation_id > 0) {
 
     if (!$confirmation) {
         $error = 'Invalid confirmation link.';
+    } elseif ($confirmation['appointment_status'] !== 'approved') {
+        $error = 'This appointment is no longer approved, so confirmation is not available.';
     } else {
-        // Check if already confirmed
         if ($confirmation['confirmation_status'] === 'confirmed') {
             $message = 'This appointment has already been confirmed.';
         } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Confirm the appointment
             $confirmed_at = date('Y-m-d H:i:s');
             $confirmed_status = 'confirmed';
-            
-            $update_stmt = $conn->prepare("UPDATE appointment_confirmations SET confirmed_at = ?, confirmation_status = ? WHERE id = ? AND patient_id = ?");
+
+            $update_stmt = $conn->prepare("UPDATE appointment_confirmations
+                                           SET confirmed_at = ?, confirmation_status = ?
+                                           WHERE id = ? AND patient_id = ?");
             $update_stmt->bind_param('ssii', $confirmed_at, $confirmed_status, $confirmation_id, $patient_id);
-            
+
             if ($update_stmt->execute()) {
-                $message = 'Appointment confirmed successfully! See you on ' . htmlspecialchars((new DateTime($confirmation['slot_time']))->format('Y-m-d at H:i')) . '.';
+                $message = 'Appointment confirmed successfully! See you on ' . (new DateTime($confirmation['slot_time']))->format('Y-m-d at H:i') . '.';
             } else {
                 $error = 'Unable to confirm appointment.';
             }
             $update_stmt->close();
-            
-            // Refresh confirmation data
-            $stmt = $conn->prepare("SELECT ac.id, ac.appointment_id, ac.confirmation_status, a.slot_time, u.name AS doctor_name, u.specialty 
-                                   FROM appointment_confirmations ac 
-                                   JOIN appointments a ON ac.appointment_id = a.id 
-                                   JOIN users u ON a.doctor_id = u.id 
-                                   WHERE ac.id = ? AND ac.patient_id = ?");
+
+            $stmt = $conn->prepare("SELECT 
+                                        ac.id,
+                                        ac.appointment_id,
+                                        ac.confirmation_status,
+                                        ac.confirmed_at,
+                                        a.slot_time,
+                                        a.status AS appointment_status,
+                                        u.name AS doctor_name,
+                                        u.specialty
+                                    FROM appointment_confirmations ac
+                                    JOIN appointments a ON ac.appointment_id = a.id
+                                    JOIN users u ON a.doctor_id = u.id
+                                    WHERE ac.id = ? AND ac.patient_id = ?");
             $stmt->bind_param('ii', $confirmation_id, $patient_id);
             $stmt->execute();
             $result = $stmt->get_result();

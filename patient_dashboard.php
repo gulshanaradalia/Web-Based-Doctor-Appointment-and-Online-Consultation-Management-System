@@ -15,7 +15,6 @@ require_once "db.php";
 
 $patient_id = $_SESSION['user_id'];
 
-// Fetch patient's appointments with confirmation status + doctor fee
 $stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, u.id AS doctor_id, u.name AS doctor_name, 
                         u.specialty, u.consultation_fee,
                         ac.id as confirmation_id, ac.confirmation_status 
@@ -32,7 +31,6 @@ $stmt->close();
 
 $slotDurationMinutes = 15;
 
-// Fetch payment status for all appointments in a single query
 $appointmentIds = array_column($appointments, 'id');
 $paymentsByAppointment = [];
 if (!empty($appointmentIds)) {
@@ -72,12 +70,13 @@ foreach ($appointments as $idx => $apt) {
     $appointments[$idx]['payment_info'] = $paymentsByAppointment[$apt['id']] ?? null;
 }
 
-// Fetch pending confirmations
 $confirm_stmt = $conn->prepare("SELECT ac.id, ac.appointment_id, a.slot_time, u.name AS doctor_name, u.specialty
                                FROM appointment_confirmations ac
                                JOIN appointments a ON ac.appointment_id = a.id
                                JOIN users u ON a.doctor_id = u.id
-                               WHERE ac.patient_id = ? AND ac.confirmation_status IN ('notification_sent', 'pending')
+                               WHERE ac.patient_id = ?
+                                 AND a.status = 'approved'
+                                 AND ac.confirmation_status IN ('notification_sent', 'pending')
                                ORDER BY a.slot_time ASC");
 $confirm_stmt->bind_param('i', $patient_id);
 $confirm_stmt->execute();
@@ -168,8 +167,8 @@ $confirm_stmt->close();
                                     <th>Specialty</th>
                                     <th>Slot</th>
                                     <th>Consultation Fee</th>
-                                    <th>Queue #</th>
-                                    <th>Est. Wait</th>
+                                    <th>Queue</th>
+                                    <th>Waiting Time</th>
                                     <th>Booking Status</th>
                                     <th>Payment</th>
                                     <th>Confirmation</th>
@@ -213,7 +212,7 @@ $confirm_stmt->close();
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <?php if ($apt['confirmation_id']): ?>
+                                            <?php if ($apt['status'] === 'approved' && $apt['confirmation_id']): ?>
                                                 <span class="badge bg-<?php echo $apt['confirmation_status'] === 'confirmed' ? 'success' : 'info'; ?>">
                                                     <?php echo ucfirst(str_replace('_', ' ', $apt['confirmation_status'])); ?>
                                                 </span>
@@ -223,8 +222,10 @@ $confirm_stmt->close();
                                                         Confirm
                                                     </a>
                                                 <?php endif; ?>
-                                            <?php else: ?>
+                                            <?php elseif ($apt['status'] === 'approved'): ?>
                                                 <span class="badge bg-secondary">No confirmation yet</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary">Not available</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -237,7 +238,6 @@ $confirm_stmt->close();
         </div>
     </main>
 
-    <!-- Payment Success Modal -->
     <div class="modal fade" id="paymentSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
@@ -257,7 +257,6 @@ $confirm_stmt->close();
         </div>
     </div>
 
-    <!-- Payment Method Modal -->
     <div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
