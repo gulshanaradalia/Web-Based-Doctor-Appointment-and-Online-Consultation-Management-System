@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
   role ENUM('patient','doctor','admin') NOT NULL DEFAULT 'patient',
   location VARCHAR(100) NULL,
   specialty VARCHAR(100) NULL,
+  consultation_fee DECIMAL(10,2) NOT NULL DEFAULT 500.00,
   password_hash VARCHAR(255) NOT NULL,
   status ENUM('active','blocked') NOT NULL DEFAULT 'active',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -45,4 +46,20 @@ CREATE TABLE IF NOT EXISTS schedule_slots (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE,
   UNIQUE KEY uniq_doctor_schedule_slot (doctor_id, slot_time)
+);
+
+CREATE TABLE IF NOT EXISTS payments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  appointment_id INT NOT NULL,
+  patient_id INT NOT NULL,
+  doctor_id INT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  method VARCHAR(50) NOT NULL,
+  status ENUM('pending','completed','failed') NOT NULL DEFAULT 'pending',
+  transaction_id VARCHAR(100) NULL,
+  invoice_number VARCHAR(100) NULL,
+  payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
+  FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE
 );
