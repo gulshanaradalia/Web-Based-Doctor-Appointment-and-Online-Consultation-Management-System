@@ -228,6 +228,82 @@ footer a:hover {
     }
 }
 
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.7rem;
+    margin-top: 0.95rem;
+}
+
+.slot-option {
+    position: relative;
+    border-radius: 0.9rem;
+    border: 1px solid #c2d8e5;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    min-height: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.75rem 0.6rem;
+    color: #15475d;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.slot-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.slot-option span {
+    display: block;
+    font-size: 0.93rem;
+}
+
+.slot-option small {
+    display: block;
+    font-size: 0.77rem;
+    color: #5b768a;
+}
+
+.slot-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.14);
+    border-color: #4fb5c9;
+}
+
+.slot-option.slot-available {
+    background: #f1fcfd;
+    border-color: #86d5e3;
+}
+
+.slot-option.slot-available input[type="radio"]:checked ~ span,
+.slot-option.slot-available input[type="radio"]:checked ~ small {
+    color: #0d5170;
+    font-weight: 700;
+}
+
+.slot-option.slot-booked {
+    background: #eef2f6;
+    border-color: #c9d3dd;
+    color: #8a98a8;
+    cursor: not-allowed;
+}
+
+.slot-option.slot-booked small {
+    color: #6b7b8d;
+}
+
+.slot-option.disabled {
+    opacity: 0.72;
+}
+
 /* about/features section boxes */
 .feature-box {
     background: #fff;
@@ -235,6 +311,233 @@ footer a:hover {
     border-radius: 1rem;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     height: 100%;
+}
+
+/* style improvements for booking view */
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.65rem;
+    margin-top: 0.82rem;
+}
+
+.slot-option {
+    position: relative;
+    border-radius: 0.7rem;
+    border: 1px solid #c3d7e0;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px #e8f1f7;
+    color: #2b3a4c;
+    font-weight: 600;
+    line-height: 1.25;
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.slot-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.slot-option span {
+    display: block;
+    font-size: 0.95rem;
+    color: #186380;
+}
+
+.slot-option small {
+    display: block;
+    margin-top: 0.23rem;
+    font-size: 0.76rem;
+    color: #556877;
+}
+
+.slot-option:hover {
+    transform: translateY(-2px);
+    border-color: #65b1c6;
+    box-shadow: 0 6px 18px rgba(33, 83, 103, 0.12);
+}
+
+.slot-option.slot-available {
+    background: #f2fbfc;
+    border-color: #83d2e0;
+}
+
+.slot-option.slot-available input[type="radio"]:checked ~ span,
+.slot-option.slot-available input[type="radio"]:checked ~ small {
+    color: #094b61;
+    font-weight: 700;
+}
+
+.slot-option.slot-booked {
+    background: #f5f7f9;
+    border-color: #cad5df;
+    color: #8a9aad;
+    cursor: not-allowed;
+}
+
+.slot-option.disabled {
+    opacity: 0.78;
+}
+
+.day-slot-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.day-card {
+    border: 1px solid #d3e3ed;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(17, 72, 104, 0.08);
+}
+
+.day-header {
+    padding: 0.7rem 0.85rem;
+    background: #eaf7ff;
+    border-bottom: 1px solid #c6dded;
+    color: #1f5f86;
+    font-weight: 700;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
+.day-slot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.75rem;
+}
+
+.btn-slot {
+    margin: 0 0.2rem 0.4rem 0;
+    min-width: 72px;
+    height: 42px;
+    border-radius: 0.55rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0.4rem 0.55rem;
+}
+
+.btn-slot.booked {
+    border-color: #ced4da;
+    color: #6c757d;
+    background: #e9ecef;
+}
+
+.btn-slot:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-slot:hover:not(.booked) {
+    transform: translateY(-1px);
+}
+
+.btn-slot.active,
+.btn-slot:active,
+.btn-check:checked + .btn-slot {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+}
+
+.btn-slot small {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .btn-slot {
+        min-width: 58px;
+        font-size: 0.85rem;
+        padding: 0.35rem 0.45rem;
+    }
+}
+
+@media (max-width: 540px) {
+    .day-slot-grid {
+        justify-content: flex-start;
+    }
+}
+
+.slot-time-option small {
+    margin-top: 0.18rem;
+    font-size: 0.7rem;
+    color: #62809c;
+}
+
+.slot-time-option.slot-available:hover {
+    transform: translateY(-2px);
+    border-color: #55b2d1;
+    box-shadow: 0 4px 12px rgba(28, 96, 131, 0.15);
+    background: #e8fbff;
+}
+
+.slot-time-option.slot-available input[type="radio"]:checked ~ .time-label,
+.slot-time-option.slot-available input[type="radio"]:checked ~ small {
+    color: #0d3f58;
+    font-weight: 700;
+}
+
+.slot-time-option.slot-booked {
+    background: #f5f6f8;
+    border-color: #c8d4df;
+    color: #7891a4;
+    cursor: not-allowed;
+}
+
+.slot-time-option.slot-booked small {
+    color: #8ca3b4;
+}
+
+@media (max-width: 768px) {
+    .day-slot-grid {
+        grid-template-columns: repeat(3, minmax(90px, 1fr));
+    }
+}
+
+@media (max-width: 540px) {
+    .day-slot-grid {
+        grid-template-columns: repeat(2, minmax(90px, 1fr));
+    }
+}
+
+.alert {
+    border-radius: 0.65rem;
+    border: 1px solid rgba(100, 130, 150, 0.2);
+    box-shadow: 0 3px 10px rgba(29, 70, 95, 0.07);
+}
+
+.card {
+    border-radius: 0.85rem;
+    box-shadow: 0 6px 22px rgba(30, 65, 88, 0.08);
+}
+
+.btn-accent {
+    background-color: #16a0be;
+    border: 1px solid #1394ad;
+    padding: 0.58rem 1.05rem;
+    color: #fff;
+    font-weight: 700;
+}
+
+.btn-accent:hover {
+    background-color: #1284a2;
+    border: 1px solid #107b95;
 }
 
 .feature-box:hover {

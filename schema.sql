@@ -36,3 +36,13 @@ CREATE TABLE IF NOT EXISTS appointment_confirmations (
   FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
   UNIQUE KEY unique_appointment_confirmation (appointment_id)
 );
+
+CREATE TABLE IF NOT EXISTS schedule_slots (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  doctor_id INT NOT NULL,
+  slot_time DATETIME NOT NULL,
+  slot_status ENUM('available','booked','cancelled') NOT NULL DEFAULT 'available',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY uniq_doctor_schedule_slot (doctor_id, slot_time)
+);
