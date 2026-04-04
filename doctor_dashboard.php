@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'
     if (in_array($action, ['approve', 'reject'], true) && $appointment_id > 0) {
         $new_status = ($action === 'approve') ? 'approved' : 'rejected';
 
+        // Check if appointment exists and belongs to the doctor
         $checkStmt = $conn->prepare("SELECT id, patient_id, status 
                                      FROM appointments 
                                      WHERE id = ? AND doctor_id = ? 
@@ -42,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'
             $message = "Appointment is already " . ucfirst($new_status) . ".";
             $message_type = 'warning';
         } else {
+            // Update appointment status to approved or rejected
             $updateStmt = $conn->prepare("UPDATE appointments 
                                           SET status = ? 
                                           WHERE id = ? AND doctor_id = ?");
@@ -62,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'
                         $confirmation_status = 'notification_sent';
                         $confirmed_at = null;
 
+                        // Reset confirmation if appointment is approved again
                         $resetConfirm = $conn->prepare("UPDATE appointment_confirmations
                                                         SET confirmation_status = ?, confirmed_at = ?
                                                         WHERE appointment_id = ?");
@@ -69,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'
                         $resetConfirm->execute();
                         $resetConfirm->close();
                     } else {
+                        // Insert new confirmation
                         $confirmation_status = 'notification_sent';
                         $insertConfirm = $conn->prepare("INSERT INTO appointment_confirmations (appointment_id, patient_id, confirmation_status)
                                                          VALUES (?, ?, ?)");
@@ -77,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'
                         $insertConfirm->close();
                     }
                 } else {
+                    // Delete confirmation if appointment is rejected
                     $deleteConfirm = $conn->prepare("DELETE FROM appointment_confirmations WHERE appointment_id = ?");
                     $deleteConfirm->bind_param('i', $appointment_id);
                     $deleteConfirm->execute();
@@ -209,6 +214,7 @@ foreach ($appointments as $idx => $apt) {
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2 flex-wrap">
+                                        <!-- Approve Button -->
                                         <?php if ($apt['status'] !== 'approved'): ?>
                                             <form method="POST" class="m-0" onsubmit="return confirm('Approve this appointment?');">
                                                 <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
@@ -217,6 +223,7 @@ foreach ($appointments as $idx => $apt) {
                                             </form>
                                         <?php endif; ?>
 
+                                        <!-- Reject Button -->
                                         <?php if ($apt['status'] !== 'rejected'): ?>
                                             <form method="POST" class="m-0" onsubmit="return confirm('Reject this appointment?');">
                                                 <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
@@ -225,6 +232,7 @@ foreach ($appointments as $idx => $apt) {
                                             </form>
                                         <?php endif; ?>
 
+                                        <!-- Status Message for the Approved Request -->
                                         <?php if ($apt['status'] === 'approved'): ?>
                                             <small class="text-muted align-self-center">Approved request can still be rejected</small>
                                         <?php elseif ($apt['status'] === 'rejected'): ?>
