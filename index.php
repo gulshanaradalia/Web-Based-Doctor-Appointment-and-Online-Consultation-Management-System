@@ -26,7 +26,7 @@ session_start();
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <i class="bi bi-heart-pulse-fill me-2"></i>
-                <span>Doctor Appointment and Online Consultation</span>
+                <span>HealthTech</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -35,8 +35,7 @@ session_start();
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#doctors">Doctors</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
@@ -52,7 +51,7 @@ session_start();
             <h1 class="display-4 fw-bold mb-3">Your Health, Our Technology</h1>
             <p class="lead mb-4">Trusted doctors at your fingertips. Book appointments and online consultations instantly.</p>
             <div>
-                <a href="register.php" class="btn btn-lg btn-accent me-2">Book Appointment</a>
+                <a href="register.php" class="btn btn-lg btn-accent me-2">Online Appointment Booking</a>
 
             </div>
         </div>
@@ -117,34 +116,17 @@ session_start();
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-5">
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <h4>Contact Us</h4>
-                    <p>Dhaka, Bangladesh<br>
-                        Phone: +880 1234 567890<br>
-                        Email: healthtech@email.com</p>
-                </div>
-                <div class="col-md-6">
-                    <h4>Stay Connected</h4>
+                <div class="col-md-12 text-center">
+                    <h5>Stay Connected</h5>
                     <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
                     <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
                     <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4">
-        <div class="container d-flex justify-content-between align-items-center">
-            <small>&copy; <?php echo date('Y'); ?> Doctor Appointment and Online Consultation System. All rights reserved.</small>
-            <ul class="list-inline mb-0">
-                <li class="list-inline-item"><a href="#" class="text-light">Privacy Policy</a></li>
-                <li class="list-inline-item"><a href="#" class="text-light">Terms of Use</a></li>
-            </ul>
         </div>
     </footer>
 

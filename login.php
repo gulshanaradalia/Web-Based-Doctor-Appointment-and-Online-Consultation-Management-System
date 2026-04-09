@@ -56,14 +56,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     body {
       background: linear-gradient(135deg, #667eea, #764ba2);
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 5rem 20px 0;
+    }
+
+    .page-content {
+      flex: 1 0 auto;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding-bottom: 2rem;
     }
 
     .card {
@@ -75,37 +84,70 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 
 <body>
-  <div class="card shadow p-4">
-    <h3 class="mb-3 text-center">Login</h3>
-
-    <?php if ($errors): ?>
-      <div class="alert alert-danger">
-        <ul class="mb-0">
-          <?php foreach ($errors as $e): ?>
-            <li><?php echo clean($e); ?></li>
-          <?php endforeach; ?>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.php">
+        <i class="bi bi-heart-pulse-fill me-2"></i>
+        <span>HealthTech</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ms-auto me-3">
+          <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
+          <li class="nav-item"><a class="nav-link active" href="contact.php">Contact</a></li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="register.php"><i class="bi bi-person-plus"></i> Register</a></li>
         </ul>
       </div>
-    <?php endif; ?>
+    </div>
+  </nav>
+  <div class="page-content">
+    <div class="card shadow p-4">
+      <h3 class="mb-3 text-center">Login</h3>
 
-    <form method="POST" novalidate>
-      <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input class="form-control" type="email" name="email" value="<?php echo clean($_POST["email"] ?? ""); ?>" required>
-      </div>
+      <?php if ($errors): ?>
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            <?php foreach ($errors as $e): ?>
+              <li><?php echo clean($e); ?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
 
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input class="form-control" type="password" name="password" required>
-      </div>
+      <form method="POST" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input class="form-control" type="email" name="email" value="<?php echo clean($_POST["email"] ?? ""); ?>" required>
+        </div>
 
-      <button class="btn btn-dark w-100">Login</button>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input class="form-control" type="password" name="password" required>
+        </div>
 
-      <div class="text-center mt-3">
-        <a href="forgot.php" class="text-primary fw-bold" style="text-decoration: underline;">Forgot password?</a>
-      </div>
-    </form>
+        <button class="btn btn-dark w-100">Login</button>
+
+        <div class="text-center mt-3">
+          <a href="forgot.php" class="text-primary fw-bold" style="text-decoration: underline;">Forgot password?</a>
+        </div>
+      </form>
+    </div>
   </div>
+  <footer class="bg-dark text-light py-4 w-100">
+    <div class="container text-center">
+      <h5>Stay Connected</h5>
+      <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
+      <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
+      <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
