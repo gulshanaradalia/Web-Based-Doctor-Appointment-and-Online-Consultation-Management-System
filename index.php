@@ -35,11 +35,11 @@ session_start();
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="register.php"><i class="bi bi-person-plus"></i> Register</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-light btn-sm text-primary px-3" href="register.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>
@@ -50,9 +50,9 @@ session_start();
         <div class="container">
             <h1 class="display-4 fw-bold mb-3">Your Health, Our Technology</h1>
             <p class="lead mb-4">Trusted doctors at your fingertips. Book appointments and online consultations instantly.</p>
-            <div>
-                <a href="register.php" class="btn btn-lg btn-accent me-2">Online Appointment Booking</a>
-
+            <div class="d-flex flex-column align-items-center">
+                <a href="login.php" class="btn btn-lg btn-dark mb-3 w-100" style="max-width: 320px;">Login</a>
+                <a href="register.php" class="btn btn-lg btn-accent w-100" style="max-width: 320px;">Register</a>
             </div>
         </div>
     </header>

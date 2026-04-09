@@ -16,7 +16,7 @@ require_once "db.php";
 $patient_id = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, u.id AS doctor_id, u.name AS doctor_name, 
-                        u.specialty, u.consultation_fee,
+                        u.specialty,
                         ac.id as confirmation_id, ac.confirmation_status 
                         FROM appointments a 
                         JOIN users u ON a.doctor_id = u.id 
@@ -88,23 +88,38 @@ $confirm_stmt->close();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Custom stylesheet -->
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
         <div class="container">
-            <a class="navbar-brand" href="patient_dashboard.php">Patient Dashboard</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand d-flex align-items-center" href="index.php">
+                <i class="bi bi-heart-pulse-fill me-2"></i>
+                <span>HealthTech</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Search Doctors</a></li>
-                    <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -371,5 +386,19 @@ $confirm_stmt->close();
                 '</div>';
         }
     </script>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h5>Stay Connected</h5>
+                    <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
+                    <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
+                    <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

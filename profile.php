@@ -30,10 +30,11 @@ function clean($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
 <title>Profile - Doctor Appointment</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <link href="style.css" rel="stylesheet">
 <style>
   body { background: #eef3ff; }
-  .profile-container { max-width: 420px; margin: 1.4rem auto; }
+  .profile-container { max-width: 420px; margin: 6rem auto 1rem; }
   .card-profile { border-radius: 24px; background: #fff; border: 1px solid #e1e7f7; box-shadow: 0 14px 34px rgba(0,0,0,0.08); }
   .avatar { width: 96px; height: 96px; border-radius: 50%; margin: 0 auto 0.75rem; border: 2px solid #000; display: flex; align-items:center; justify-content:center; background: #f2f6ff; color:#000; font-size:2rem; }
   .menu-list .list-group-item { border-radius: 14px; border:0; margin-bottom:0.5rem; background:#f6f8ff; }
@@ -44,15 +45,27 @@ function clean($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
 </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
   <div class="container">
-    <a class="navbar-brand" href="dashboard.php">Doctor Appointment</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu"><span class="navbar-toggler-icon"></span></button>
-    <div class="collapse navbar-collapse" id="navmenu">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link active" href="profile.php">Profile</a></li>
-        <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+    <a class="navbar-brand d-flex align-items-center" href="index.php">
+      <i class="bi bi-heart-pulse-fill me-2"></i>
+      <span>HealthTech</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ms-auto me-3">
+        <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?php echo $_SESSION['role'] === 'doctor' ? 'schedule_slot.php' : 'doctor_search.php'; ?>">
+          <?php echo $_SESSION['role'] === 'doctor' ? 'Schedule Slots' : 'Find Doctors'; ?>
+        </a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link active" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a></li>
+        <li class="nav-item"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
       </ul>
     </div>
   </div>
@@ -86,6 +99,21 @@ function clean($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
     <div class="list-group-item"><a href="logout.php"><span><i class="bi bi-box-arrow-right text-danger"></i> <strong class="text-danger">Log out</strong></span><i class="bi bi-chevron-right"></i></a></div>
   </div>
 </div>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-4 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h5>Stay Connected</h5>
+        <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
+        <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
+        <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
