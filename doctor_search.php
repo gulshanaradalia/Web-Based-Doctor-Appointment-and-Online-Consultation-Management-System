@@ -56,28 +56,49 @@ if ($stmt) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Search</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Custom stylesheet -->
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
         <div class="container">
-            <a class="navbar-brand" href="patient_dashboard.php">Patient Dashboard</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand d-flex align-items-center" href="index.php">
+                <i class="bi bi-heart-pulse-fill me-2"></i>
+                <span>HealthTech</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="doctor_search.php">Doctor Search</a></li>
-                    <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="doctor_search.php">Find Doctors</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
                 </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-light btn-sm text-primary" href="patient_dashboard.php"><i class="bi bi-person-circle me-1"></i> My Dashboard</a>
+                    <a class="btn btn-outline-light btn-sm" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i> Logout</a>
+                </div>
             </div>
         </div>
     </nav>
 
     <main class="container mt-5 pt-5">
+        <div class="d-flex justify-content-end gap-2 mb-4">
+            <a class="btn btn-primary btn-sm" href="patient_dashboard.php"><i class="bi bi-person-circle me-1"></i> My Dashboard</a>
+            <a class="btn btn-outline-secondary btn-sm" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i> Logout</a>
+        </div>
         <h2 class="mb-4">Search Doctors</h2>
         <form method="get" class="row g-3 mb-4">
             <div class="col-md-4">
@@ -118,6 +139,54 @@ if ($stmt) {
             <div class="alert alert-info">No doctors found using the selected filters. Please adjust your search criteria.</div>
         <?php endif; ?>
     </main>
+
+    <section id="about" class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center text-center mb-4">
+                <div class="col-lg-8">
+                    <h2 class="fw-bold">Find the Right Doctor Fast</h2>
+                    <p class="text-muted">Search by doctor name, location or specialty and book your appointment securely with confidence.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-4 h-100">
+                        <div class="text-primary mb-3"><i class="bi bi-search fs-1"></i></div>
+                        <h5 class="mb-2">Simple Search</h5>
+                        <p class="mb-0 text-muted">Use filters to quickly locate a specialist that matches your needs.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-4 h-100">
+                        <div class="text-primary mb-3"><i class="bi bi-calendar-check fs-1"></i></div>
+                        <h5 class="mb-2">Instant Booking</h5>
+                        <p class="mb-0 text-muted">Book appointment slots directly from the search results page.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-4 h-100">
+                        <div class="text-primary mb-3"><i class="bi bi-person-check fs-1"></i></div>
+                        <h5 class="mb-2">Trusted Doctors</h5>
+                        <p class="mb-0 text-muted">Connect with licensed professionals across top specialties.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h5>Stay Connected</h5>
+                    <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
+                    <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
+                    <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
