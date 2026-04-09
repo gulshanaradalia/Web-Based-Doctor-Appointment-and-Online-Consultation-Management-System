@@ -63,5 +63,3 @@ CREATE TABLE IF NOT EXISTS payments (
   FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
-
