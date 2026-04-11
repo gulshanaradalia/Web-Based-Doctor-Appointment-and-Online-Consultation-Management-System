@@ -143,6 +143,7 @@ foreach ($appointments as $idx => $apt) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -157,6 +158,7 @@ foreach ($appointments as $idx => $apt) {
     <!-- Custom stylesheet -->
     <link href="style.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
@@ -171,96 +173,111 @@ foreach ($appointments as $idx => $apt) {
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="schedule_slot.php">Schedule Slots</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-light btn-sm text-primary px-3" href="register.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
     <main class="container mt-5 pt-5">
-        <h2>Doctor Dashboard</h2>
-        <p>Welcome Dr. <?php echo htmlspecialchars($_SESSION['name']); ?></p>
+        <div class="row gy-4">
+            <aside class="col-lg-3">
+                <div class="card shadow-sm sticky-top" style="top:100px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Quick Links</h5>
+                        <p class="text-muted mb-3">Your dashboard controls.</p>
+                        <a href="doctor_dashboard.php" class="btn btn-primary w-100 mb-2"><i class="bi bi-speedometer2"></i> My Dashboard</a>
+                        <a href="profile.php" class="btn btn-outline-secondary w-100 mb-2"><i class="bi bi-person-circle"></i> Profile</a>
+                        <a href="logout.php" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                    </div>
+                </div>
+            </aside>
+            <section class="col-lg-9">
+                <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                    <h2>Doctor Dashboard</h2>
+                    <p>Welcome Dr. <?php echo htmlspecialchars($_SESSION['name']); ?></p>
 
-        <?php if ($message): ?>
-            <div class="alert alert-<?php echo htmlspecialchars($message_type); ?>">
-                <?php echo htmlspecialchars($message); ?>
-            </div>
-        <?php endif; ?>
+                    <?php if ($message): ?>
+                        <div class="alert alert-<?php echo htmlspecialchars($message_type); ?>">
+                            <?php echo htmlspecialchars($message); ?>
+                        </div>
+                    <?php endif; ?>
 
-        <h3 class="mt-4">Schedule & Availability</h3>
-        <p>Manage your available doctor time slots via a dedicated page.</p>
-        <a href="schedule_slot.php" class="btn btn-accent mb-4">Go to Schedule Slot Management</a>
+                    <h3 class="mt-4">Schedule & Availability</h3>
+                    <p>Manage your available doctor time slots via a dedicated page.</p>
+                    <a href="schedule_slot.php" class="btn btn-accent mb-4">Go to Schedule Slot Management</a>
 
-        <h3 class="mt-4">All Appointment Requests</h3>
+                    <h3 class="mt-4">All Appointment Requests</h3>
+                </div>
 
-        <?php if (count($appointments) === 0): ?>
-            <div class="alert alert-info">No appointment requests found.</div>
-        <?php else: ?>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Patient</th>
-                            <th>Contact</th>
-                            <th>Slot</th>
-                            <th>Queue #</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($appointments as $idx => $apt): ?>
-                            <tr>
-                                <td><?php echo $idx + 1; ?></td>
-                                <td><?php echo htmlspecialchars($apt['patient_name']); ?></td>
-                                <td><?php echo htmlspecialchars($apt['patient_email'] . ' / ' . $apt['patient_phone']); ?></td>
-                                <td><?php echo htmlspecialchars((new DateTime($apt['slot_time']))->format('Y-m-d H:i')); ?></td>
-                                <td><?php echo htmlspecialchars($apt['queue_position'] ?? '-'); ?></td>
-                                <td>
-                                    <span class="badge bg-<?php echo $apt['status'] === 'approved' ? 'success' : ($apt['status'] === 'pending' ? 'warning text-dark' : 'danger'); ?>">
-                                        <?php echo ucfirst($apt['status']); ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2 flex-wrap">
-                                        <!-- Approve Button -->
-                                        <?php if ($apt['status'] !== 'approved'): ?>
-                                            <form method="POST" class="m-0" onsubmit="return confirm('Approve this appointment?');">
-                                                <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
-                                                <input type="hidden" name="action" value="approve">
-                                                <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                                            </form>
-                                        <?php endif; ?>
+                <?php if (count($appointments) === 0): ?>
+                    <div class="alert alert-info">No appointment requests found.</div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Patient</th>
+                                    <th>Contact</th>
+                                    <th>Slot</th>
+                                    <th>Queue #</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($appointments as $idx => $apt): ?>
+                                    <tr>
+                                        <td><?php echo $idx + 1; ?></td>
+                                        <td><?php echo htmlspecialchars($apt['patient_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($apt['patient_email'] . ' / ' . $apt['patient_phone']); ?></td>
+                                        <td><?php echo htmlspecialchars((new DateTime($apt['slot_time']))->format('Y-m-d H:i')); ?></td>
+                                        <td><?php echo htmlspecialchars($apt['queue_position'] ?? '-'); ?></td>
+                                        <td>
+                                            <span class="badge bg-<?php echo $apt['status'] === 'approved' ? 'success' : ($apt['status'] === 'pending' ? 'warning text-dark' : 'danger'); ?>">
+                                                <?php echo ucfirst($apt['status']); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <!-- Approve Button -->
+                                                <?php if ($apt['status'] !== 'approved'): ?>
+                                                    <form method="POST" class="m-0" onsubmit="return confirm('Approve this appointment?');">
+                                                        <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
+                                                        <input type="hidden" name="action" value="approve">
+                                                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                                    </form>
+                                                <?php endif; ?>
 
-                                        <!-- Reject Button -->
-                                        <?php if ($apt['status'] !== 'rejected'): ?>
-                                            <form method="POST" class="m-0" onsubmit="return confirm('Reject this appointment?');">
-                                                <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
-                                                <input type="hidden" name="action" value="reject">
-                                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                                            </form>
-                                        <?php endif; ?>
+                                                <!-- Reject Button -->
+                                                <?php if ($apt['status'] !== 'rejected'): ?>
+                                                    <form method="POST" class="m-0" onsubmit="return confirm('Reject this appointment?');">
+                                                        <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
+                                                        <input type="hidden" name="action" value="reject">
+                                                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                                    </form>
+                                                <?php endif; ?>
 
-                                        <!-- Status Message for the Approved Request -->
-                                        <?php if ($apt['status'] === 'approved'): ?>
-                                            <small class="text-muted align-self-center">Approved request can still be rejected</small>
-                                        <?php elseif ($apt['status'] === 'rejected'): ?>
-                                            <small class="text-muted align-self-center">Rejected request can still be approved</small>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
+                                                <!-- Status Message for the Approved Request -->
+                                                <?php if ($apt['status'] === 'approved'): ?>
+                                                    <small class="text-muted align-self-center">Approved request can still be rejected</small>
+                                                <?php elseif ($apt['status'] === 'rejected'): ?>
+                                                    <small class="text-muted align-self-center">Rejected request can still be approved</small>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
     </main>
 
     <!-- Footer -->
@@ -279,4 +296,5 @@ foreach ($appointments as $idx => $apt) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

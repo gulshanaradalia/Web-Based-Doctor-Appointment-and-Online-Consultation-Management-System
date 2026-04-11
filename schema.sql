@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   phone VARCHAR(20) NOT NULL UNIQUE,
   role ENUM('patient','doctor','admin') NOT NULL DEFAULT 'patient',
   location VARCHAR(100) NULL,
+  hospital VARCHAR(100) NULL,
   specialty VARCHAR(100) NULL,
   consultation_fee DECIMAL(10,2) NOT NULL DEFAULT 500.00,
   password_hash VARCHAR(255) NOT NULL,

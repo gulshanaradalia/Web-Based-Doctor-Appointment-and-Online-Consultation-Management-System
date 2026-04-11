@@ -91,6 +91,7 @@ function initiatePayment($conn, $user_id)
     $appointment = $result->fetch_assoc();
     $stmt->close();
     if (!$appointment) {
+        error_log("Appointment not found for id: $appointment_id, user: $user_id");
         throw new Exception('Appointment not found or not approved');
     }
     $amount = floatval($appointment['consultation_fee'] ?? 500);

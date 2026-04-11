@@ -35,8 +35,8 @@ session_start();
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link btn btn-light btn-sm text-primary px-3" href="register.php">Online Appointment</a></li>
@@ -67,51 +67,31 @@ session_start();
                 </div>
             </div>
             <div class="row g-4">
-                <div class="col-12">
-                    <div class="d-flex align-items-center feature-item p-3">
-                        <i class="bi bi-search fs-1 text-primary me-4"></i>
-                        <div>
-                            <h5 class="fw-semibold mb-1">Find Doctors</h5>
-                            <p class="mb-0 text-muted">Filter by location, specialty or availability.</p>
+                <?php $homeSteps = [
+                    ['title' => 'Find Doctors', 'description' => 'Filter by location, specialty or availability.', 'icon' => 'bi-search'],
+                    ['title' => 'Appointment Booking', 'description' => 'Schedule your consultation easily at any time that suits you.', 'icon' => 'bi-calendar-check'],
+                    ['title' => 'Online Consultation', 'description' => 'Start audio or video calls with specialists from home.', 'icon' => 'bi-camera-video'],
+                    ['title' => 'Digital Reports', 'description' => 'Receive prescriptions and feedback online.', 'icon' => 'bi-file-earmark-medical-fill'],
+                    ['title' => 'Secure Payments', 'description' => 'Pay consultation fees safely through our portal.', 'icon' => 'bi-credit-card-2-back-fill'],
+                ]; ?>
+                <?php foreach ($homeSteps as $index => $step): ?>
+                    <div class="col-12">
+                        <div class="card rounded-4 shadow-sm border-0 p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle bg-primary text-white" style="width:54px; height:54px; font-size:1.1rem; font-weight:700;">
+                                    <?php echo $index + 1; ?>
+                                </div>
+                                <div>
+                                    <h5 class="fw-semibold mb-1"><?php echo htmlspecialchars($step['title']); ?></h5>
+                                    <p class="mb-0 text-muted"><?php echo htmlspecialchars($step['description']); ?></p>
+                                </div>
+                                <div class="ms-auto text-primary fs-2">
+                                    <i class="bi <?php echo htmlspecialchars($step['icon']); ?>"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12">
-                    <div class="d-flex align-items-center feature-item p-3">
-                        <i class="bi bi-calendar-check fs-1 text-primary me-4"></i>
-                        <div>
-                            <h5 class="fw-semibold mb-1">Appointment Booking</h5>
-                            <p class="mb-0 text-muted">Schedule your consultation easily at any time that suits you.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="d-flex align-items-center feature-item p-3">
-                        <i class="bi bi-telephone-fill fs-1 text-primary me-4"></i>
-                        <div>
-                            <h5 class="fw-semibold mb-1">Audio/Video Calls</h5>
-                            <p class="mb-0 text-muted">Connect with doctors remotely for consultation.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="d-flex align-items-center feature-item p-3">
-                        <i class="bi bi-file-earmark-medical-fill fs-1 text-primary me-4"></i>
-                        <div>
-                            <h5 class="fw-semibold mb-1">Digital Reports</h5>
-                            <p class="mb-0 text-muted">Receive prescriptions and feedback online.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="d-flex align-items-center feature-item p-3">
-                        <i class="bi bi-credit-card-2-back-fill fs-1 text-primary me-4"></i>
-                        <div>
-                            <h5 class="fw-semibold mb-1">Secure Payments</h5>
-                            <p class="mb-0 text-muted">Pay consultation fees safely through our portal.</p>
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>

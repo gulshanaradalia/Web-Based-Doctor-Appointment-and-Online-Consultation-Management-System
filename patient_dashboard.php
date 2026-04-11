@@ -86,6 +86,7 @@ $confirm_stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -100,6 +101,7 @@ $confirm_stmt->close();
     <!-- Custom stylesheet -->
     <link href="style.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
@@ -114,143 +116,154 @@ $confirm_stmt->close();
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-light btn-sm text-primary px-3" href="register.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
     <main class="container mt-5 pt-5">
-        <div id="payment-message"></div>
-
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h2 class="mb-3">Hello, <?php echo htmlspecialchars($_SESSION["name"]); ?></h2>
-                <p class="text-muted">Use the button below to search and book the right doctor.</p>
-                <a class="btn btn-accent btn-lg" href="doctor_search.php">Go to Doctor Search</a>
-            </div>
-        </div>
-
-        <?php if (!empty($pending_confirmations)): ?>
-            <div class="row justify-content-center mt-4">
-                <div class="col-lg-10">
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <h5 class="alert-heading">⏳ Pending Confirmations</h5>
-                        <p class="mb-0">You have <?php echo count($pending_confirmations); ?> appointment(s) waiting for your confirmation.</p>
-                        <hr>
-                        <?php foreach ($pending_confirmations as $confirm): ?>
-                            <div class="mb-3">
-                                <strong><?php echo htmlspecialchars($confirm['doctor_name']); ?></strong>
-                                (<?php echo htmlspecialchars($confirm['specialty']); ?>)
-                                <br>
-                                <small class="text-muted">
-                                    Slot: <?php echo htmlspecialchars((new DateTime($confirm['slot_time']))->format('Y-m-d H:i')); ?>
-                                </small>
-                                <br>
-                                <a href="confirm_appointment.php?id=<?php echo $confirm['id']; ?>" class="btn btn-sm btn-success mt-2">
-                                    Confirm Appointment
-                                </a>
-                            </div>
-                            <?php if ($confirm !== end($pending_confirmations)): ?>
-                                <hr>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="row gy-4">
+            <aside class="col-lg-3">
+                <div class="card shadow-sm sticky-top" style="top:100px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Quick Links</h5>
+                        <p class="text-muted mb-3">Your patient panel links.</p>
+                        <a href="patient_dashboard.php" class="btn btn-primary w-100 mb-2"><i class="bi bi-speedometer2"></i> My Dashboard</a>
+                        <a href="profile.php" class="btn btn-outline-secondary w-100 mb-2"><i class="bi bi-person-circle"></i> Profile</a>
+                        <a href="logout.php" class="btn btn-outline-danger w-100"><i class="bi bi-box-arrow-right"></i> Logout</a>
                     </div>
                 </div>
-            </div>
-        <?php endif; ?>
+            </aside>
+            <section class="col-lg-9">
+                <div id="payment-message"></div>
 
-        <div class="row justify-content-center mt-5">
-            <div class="col-lg-10">
-                <h3 class="mb-4">Your Appointments</h3>
+                <div class="bg-white rounded-4 shadow-sm p-4 mb-4 text-center">
+                    <h2 class="mb-3">Hello, <?php echo htmlspecialchars($_SESSION["name"]); ?></h2>
+                    <p class="text-muted">Use the button below to search and book the right doctor.</p>
+                    <a class="btn btn-accent btn-lg" href="doctor_search.php">Go to Doctor Search</a>
+                </div>
 
-                <?php if (count($appointments) === 0): ?>
-                    <div class="alert alert-info">You have no appointments yet. Search for a doctor to book one.</div>
-                <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped align-middle">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Doctor</th>
-                                    <th>Specialty</th>
-                                    <th>Slot</th>
-                                    <th>Consultation Fee</th>
-                                    <th>Queue</th>
-                                    <th>Waiting Time</th>
-                                    <th>Booking Status</th>
-                                    <th>Payment</th>
-                                    <th>Confirmation</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($appointments as $idx => $apt): ?>
-                                    <tr>
-                                        <td><?php echo $idx + 1; ?></td>
-                                        <td><?php echo htmlspecialchars($apt['doctor_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($apt['specialty']); ?></td>
-                                        <td><?php echo htmlspecialchars((new DateTime($apt['slot_time']))->format('Y-m-d H:i')); ?></td>
-                                        <td><?php echo htmlspecialchars(number_format((float)$apt['consultation_fee'], 2)); ?> BDT</td>
-                                        <td><?php echo htmlspecialchars($apt['queue_position'] ?? '-'); ?></td>
-                                        <td><?php echo isset($apt['estimated_wait']) ? htmlspecialchars($apt['estimated_wait'] . ' mins') : '-'; ?></td>
-                                        <td>
-                                            <span class="badge bg-<?php echo $apt['status'] === 'approved' ? 'success' : ($apt['status'] === 'pending' ? 'warning' : 'danger'); ?>">
-                                                <?php echo ucfirst($apt['status']); ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <?php if (!empty($apt['payment_info'])): ?>
-                                                <span class="badge bg-<?php echo $apt['payment_info']['status'] === 'completed' ? 'success' : ($apt['payment_info']['status'] === 'pending' ? 'warning text-dark' : 'danger'); ?>">
-                                                    <?php echo ucfirst($apt['payment_info']['status']); ?>
-                                                </span>
-                                                <br>
-                                                <small>
-                                                    <?php echo htmlspecialchars($apt['payment_info']['method']); ?> /
-                                                    <?php echo htmlspecialchars($apt['payment_info']['amount']); ?> BDT
-                                                </small>
-                                            <?php elseif ($apt['status'] === 'approved'): ?>
-                                                <span class="badge bg-warning text-dark">Unpaid</span><br>
-                                                <button type="button"
-                                                        class="btn btn-sm btn-success pay-now-btn mt-2"
-                                                        data-appointment="<?php echo $apt['id']; ?>"
-                                                        data-amount="<?php echo htmlspecialchars($apt['consultation_fee']); ?>">
-                                                    Pay Now
-                                                </button>
-                                            <?php else: ?>
-                                                <span class="badge bg-secondary">Not available</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <?php if ($apt['status'] === 'approved' && $apt['confirmation_id']): ?>
-                                                <span class="badge bg-<?php echo $apt['confirmation_status'] === 'confirmed' ? 'success' : 'info'; ?>">
-                                                    <?php echo ucfirst(str_replace('_', ' ', $apt['confirmation_status'])); ?>
-                                                </span>
-                                                <?php if ($apt['confirmation_status'] !== 'confirmed'): ?>
-                                                    <br>
-                                                    <a href="confirm_appointment.php?id=<?php echo $apt['confirmation_id']; ?>" class="btn btn-sm btn-primary mt-2">
-                                                        Confirm
-                                                    </a>
-                                                <?php endif; ?>
-                                            <?php elseif ($apt['status'] === 'approved'): ?>
-                                                <span class="badge bg-secondary">No confirmation yet</span>
-                                            <?php else: ?>
-                                                <span class="badge bg-secondary">Not available</span>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
+                <?php if (!empty($pending_confirmations)): ?>
+                    <div class="row justify-content-center mt-4">
+                        <div class="col-lg-10">
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                <h5 class="alert-heading">⏳ Pending Confirmations</h5>
+                                <p class="mb-0">You have <?php echo count($pending_confirmations); ?> appointment(s) waiting for your confirmation.</p>
+                                <hr>
+                                <?php foreach ($pending_confirmations as $confirm): ?>
+                                    <div class="mb-3">
+                                        <strong><?php echo htmlspecialchars($confirm['doctor_name']); ?></strong>
+                                        (<?php echo htmlspecialchars($confirm['specialty']); ?>)
+                                        <br>
+                                        <small class="text-muted">
+                                            Slot: <?php echo htmlspecialchars((new DateTime($confirm['slot_time']))->format('Y-m-d H:i')); ?>
+                                        </small>
+                                        <br>
+                                        <a href="confirm_appointment.php?id=<?php echo $confirm['id']; ?>" class="btn btn-sm btn-success mt-2">
+                                            Confirm Appointment
+                                        </a>
+                                    </div>
+                                    <?php if ($confirm !== end($pending_confirmations)): ?>
+                                        <hr>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
                     </div>
                 <?php endif; ?>
-            </div>
-        </div>
+
+                <div class="row justify-content-center mt-5">
+                    <div class="col-lg-10">
+                        <h3 class="mb-4">Your Appointments</h3>
+
+                        <?php if (count($appointments) === 0): ?>
+                            <div class="alert alert-info">You have no appointments yet. Search for a doctor to book one.</div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Doctor</th>
+                                            <th>Specialty</th>
+                                            <th>Slot</th>
+                                            <th>Consultation Fee</th>
+                                            <th>Queue</th>
+                                            <th>Waiting Time</th>
+                                            <th>Booking Status</th>
+                                            <th>Payment</th>
+                                            <th>Confirmation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($appointments as $idx => $apt): ?>
+                                            <tr>
+                                                <td><?php echo $idx + 1; ?></td>
+                                                <td><?php echo htmlspecialchars($apt['doctor_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($apt['specialty']); ?></td>
+                                                <td><?php echo htmlspecialchars((new DateTime($apt['slot_time']))->format('Y-m-d H:i')); ?></td>
+                                                <td><?php echo htmlspecialchars(number_format((float)$apt['consultation_fee'], 2)); ?> BDT</td>
+                                                <td><?php echo htmlspecialchars($apt['queue_position'] ?? '-'); ?></td>
+                                                <td><?php echo isset($apt['estimated_wait']) ? htmlspecialchars($apt['estimated_wait'] . ' mins') : '-'; ?></td>
+                                                <td>
+                                                    <span class="badge bg-<?php echo $apt['status'] === 'approved' ? 'success' : ($apt['status'] === 'pending' ? 'warning' : 'danger'); ?>">
+                                                        <?php echo ucfirst($apt['status']); ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <?php if (!empty($apt['payment_info'])): ?>
+                                                        <span class="badge bg-<?php echo $apt['payment_info']['status'] === 'completed' ? 'success' : ($apt['payment_info']['status'] === 'pending' ? 'warning text-dark' : 'danger'); ?>">
+                                                            <?php echo ucfirst($apt['payment_info']['status']); ?>
+                                                        </span>
+                                                        <br>
+                                                        <small>
+                                                            <?php echo htmlspecialchars($apt['payment_info']['method']); ?> /
+                                                            <?php echo htmlspecialchars($apt['payment_info']['amount']); ?> BDT
+                                                        </small>
+                                                    <?php elseif ($apt['status'] === 'approved'): ?>
+                                                        <span class="badge bg-warning text-dark">Unpaid</span><br>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-success pay-now-btn mt-2"
+                                                            data-appointment="<?php echo $apt['id']; ?>"
+                                                            data-amount="<?php echo htmlspecialchars($apt['consultation_fee']); ?>">
+                                                            Pay Now
+                                                        </button>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-secondary">Not available</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
+                                                    <?php if ($apt['status'] === 'approved' && $apt['confirmation_id']): ?>
+                                                        <span class="badge bg-<?php echo $apt['confirmation_status'] === 'confirmed' ? 'success' : 'info'; ?>">
+                                                            <?php echo ucfirst(str_replace('_', ' ', $apt['confirmation_status'])); ?>
+                                                        </span>
+                                                        <?php if ($apt['confirmation_status'] !== 'confirmed'): ?>
+                                                            <br>
+                                                            <a href="confirm_appointment.php?id=<?php echo $apt['confirmation_id']; ?>" class="btn btn-sm btn-primary mt-2">
+                                                                Confirm
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    <?php elseif ($apt['status'] === 'approved'): ?>
+                                                        <span class="badge bg-secondary">No confirmation yet</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-secondary">Not available</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
     </main>
 
     <div class="modal fade" id="paymentSuccessModal" tabindex="-1" aria-hidden="true">
@@ -349,33 +362,35 @@ $confirm_stmt->close();
             formData.append('payment_method', paymentMethod);
 
             fetch('payment.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(result) {
-                if (!result.success) {
-                    throw new Error(result.error || 'Failed to process payment.');
-                }
+                    method: 'POST',
+                    body: formData
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(result) {
+                    if (!result.success) {
+                        throw new Error(result.error || 'Failed to process payment.');
+                    }
 
-                paymentMethodModal.hide();
+                    paymentMethodModal.hide();
 
-                document.getElementById('successTransactionId').textContent = result.transaction_id || '-';
-                document.getElementById('successInvoiceId').textContent = result.invoice_number || '-';
+                    document.getElementById('successTransactionId').textContent = result.transaction_id || '-';
+                    document.getElementById('successInvoiceId').textContent = result.invoice_number || '-';
 
-                paymentSuccessModal.show();
+                    paymentSuccessModal.show();
 
-                document.getElementById('paymentSuccessModal').addEventListener('hidden.bs.modal', function () {
-                    window.location.reload();
-                }, { once: true });
-            })
-            .catch(function(error) {
-                showMessage(error.message || 'Payment service is unavailable.', 'danger');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            });
+                    document.getElementById('paymentSuccessModal').addEventListener('hidden.bs.modal', function() {
+                        window.location.reload();
+                    }, {
+                        once: true
+                    });
+                })
+                .catch(function(error) {
+                    showMessage(error.message || 'Payment service is unavailable.', 'danger');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
         });
 
         function showMessage(message, type) {
@@ -401,4 +416,5 @@ $confirm_stmt->close();
         </div>
     </footer>
 </body>
+
 </html>
