@@ -13,7 +13,7 @@ if ($_SESSION["role"] != "patient") {
 
 require_once "db.php";
 
-$query = "SELECT id, name, email, phone, location, hospital, specialty FROM users WHERE role = 'doctor'";
+$query = "SELECT id, name, email, phone, location, specialty FROM users WHERE role = 'doctor'";
 $where = [];
 $params = [];
 $types = "";
@@ -123,10 +123,13 @@ if ($stmt) {
                                 <div class="card shadow-sm h-100">
                                     <div class="card-body">
                                         <h5 class="card-title mb-1"><?php echo htmlspecialchars($doctor['name']); ?></h5>
-                                        <p class="text-muted small mb-2"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['hospital']); ?> • <?php echo htmlspecialchars($doctor['location']); ?></p>
+                                        <p class="text-muted small mb-2"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['location']); ?></p>
                                         <p class="mb-1"><strong>Email:</strong> <?php echo htmlspecialchars($doctor['email']); ?></p>
                                         <p class="mb-3"><strong>Phone:</strong> <?php echo htmlspecialchars($doctor['phone']); ?></p>
-                                        <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary">Book Appointment</a>
+                                        <div class="d-flex gap-2">
+                                            <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary">Book Appointment</a>
+                                            <a href="consultation.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-success">Online Consultation</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -151,14 +154,11 @@ if ($stmt) {
             </div>
         </div>
 
-        <h3 class="mt-5 mb-4">Doctors from Our Partner Hospitals</h3>
+        <h3 class="mt-5 mb-4">Recommended Doctors</h3>
         <?php
-        $partner_hospitals = ['Dhaka Medical College Hospital', 'Square Hospitals Ltd.', 'Evercare Hospital Dhaka', 'Apollo Hospitals Dhaka', 'LabAid Specialized Hospital'];
-        $placeholders = str_repeat('?,', count($partner_hospitals) - 1) . '?';
-        $query_partner = "SELECT id, name, email, phone, location, hospital, specialty FROM users WHERE role = 'doctor' AND hospital IN ($placeholders) AND status = 'active'";
+        $query_partner = "SELECT id, name, email, phone, location, specialty FROM users WHERE role = 'doctor' AND status = 'active' LIMIT 4";
         $stmt_partner = $conn->prepare($query_partner);
         if ($stmt_partner) {
-            $stmt_partner->bind_param(str_repeat('s', count($partner_hospitals)), ...$partner_hospitals);
             $stmt_partner->execute();
             $result_partner = $stmt_partner->get_result();
             $partner_doctors = $result_partner->fetch_all(MYSQLI_ASSOC);
@@ -174,17 +174,20 @@ if ($stmt) {
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title mb-1"><?php echo htmlspecialchars($doctor['name']); ?></h5>
-                                <p class="text-muted small mb-2"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['hospital']); ?> • <?php echo htmlspecialchars($doctor['location']); ?></p>
+                                <p class="text-muted small mb-2"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['location']); ?></p>
                                 <p class="mb-1"><strong>Email:</strong> <?php echo htmlspecialchars($doctor['email']); ?></p>
                                 <p class="mb-3"><strong>Phone:</strong> <?php echo htmlspecialchars($doctor['phone']); ?></p>
-                                <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary">Book Appointment</a>
+                                <div class="d-flex gap-2">
+                                    <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary">Book Appointment</a>
+                                    <a href="consultation.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-success">Online Consultation</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <div class="alert alert-info">No doctors available from partner hospitals at the moment.</div>
+            <div class="alert alert-info">No recommended doctors available at the moment.</div>
         <?php endif; ?>
     </main>
 

@@ -15,8 +15,8 @@ require_once "db.php";
 
 $patient_id = $_SESSION['user_id'];
 
-$stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, u.id AS doctor_id, u.name AS doctor_name, 
-                        u.specialty,
+$stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, a.appointment_type, u.id AS doctor_id, u.name AS doctor_name, 
+                        u.specialty, u.consultation_fee,
                         ac.id as confirmation_id, ac.confirmation_status 
                         FROM appointments a 
                         JOIN users u ON a.doctor_id = u.id 
@@ -255,6 +255,24 @@ $confirm_stmt->close();
                                                     <?php else: ?>
                                                         <span class="badge bg-secondary">Not available</span>
                                                     <?php endif; ?>
+                                                    <?php 
+                                                        $slotTime = strtotime($apt['slot_time']);
+                                                        $now = time();
+                                                        $diff = ($slotTime - $now) / 60;
+                                                        if ($apt['status'] === 'approved') {
+                                                            if (isset($apt['appointment_type']) && $apt['appointment_type'] === 'online') {
+                                                                if ($diff <= 15 && $diff >= -60) {
+                                                                    echo '<div class="mt-2"><a href="consultation.php?doctor_id='.$apt['doctor_id'].'" class="btn btn-sm btn-success w-100"><i class="bi bi-camera-video"></i> Join Consultation</a></div>';
+                                                                } else if ($diff > 15) {
+                                                                    echo '<div class="mt-2 text-center small text-muted border rounded p-1">Starts at '.date('h:i A', $slotTime).'<br>(Join button will appear 15 mins before)</div>';
+                                                                } else {
+                                                                    echo '<div class="mt-2 text-center small text-danger border rounded p-1">Slot Expired</div>';
+                                                                }
+                                                            } else {
+                                                                echo '<div class="mt-2 text-center small text-info border border-info rounded p-1 bg-light"><i class="bi bi-hospital"></i> Offline Visit</div>';
+                                                            }
+                                                        }
+                                                    ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

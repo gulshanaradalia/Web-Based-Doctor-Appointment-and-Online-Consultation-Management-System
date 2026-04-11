@@ -76,9 +76,13 @@ if ($doctor_id) {
                             <td><?php echo $index + 1; ?></td>
                             <td><?php echo htmlspecialchars((new DateTime($slot['slot_time']))->format('Y-m-d H:i')); ?></td>
                             <td>
-                                <form method="POST" action="book_appointment_action.php">
+                                <form method="POST" action="book_appointment_action.php" class="d-flex align-items-center gap-2">
                                     <input type="hidden" name="slot_id" value="<?php echo $slot['id']; ?>">
-                                    <button type="submit" class="btn btn-primary">Book this slot</button>
+                                    <select name="appointment_type" class="form-select form-select-sm" style="width: auto;" required>
+                                        <option value="offline" selected>Offline Visit</option>
+                                        <option value="online">Online Call</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary whitespace-nowrap text-nowrap">Book Slot</button>
                                 </form>
                             </td>
                         </tr>

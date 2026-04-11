@@ -106,6 +106,7 @@ $stmt = $conn->prepare("SELECT
                             a.patient_id,
                             a.slot_time,
                             a.status,
+                            a.appointment_type,
                             u.name AS patient_name,
                             u.email AS patient_email,
                             u.phone AS patient_phone
@@ -210,7 +211,12 @@ foreach ($appointments as $idx => $apt) {
 
                     <h3 class="mt-4">Schedule & Availability</h3>
                     <p>Manage your available doctor time slots via a dedicated page.</p>
-                    <a href="schedule_slot.php" class="btn btn-accent mb-4">Go to Schedule Slot Management</a>
+                    <div class="d-flex gap-2 mb-4">
+                        <a href="schedule_slot.php" class="btn btn-accent">Go to Schedule Slot Management</a>
+                        <a href="generate_auto_slots.php" class="btn btn-success" onclick="return confirm('Do you want to automatically generate slots for the next 30 days?\n(Mon, Wed, Fri from 3:00 PM to 6:00 PM)');">
+                            <i class="bi bi-magic"></i> Auto-Generate 30 Days Slots (Mon,Wed,Fri 3PM-6PM)
+                        </a>
+                    </div>
 
                     <h3 class="mt-4">All Appointment Requests</h3>
                 </div>
@@ -267,6 +273,35 @@ foreach ($appointments as $idx => $apt) {
                                                 <!-- Status Message for the Approved Request -->
                                                 <?php if ($apt['status'] === 'approved'): ?>
                                                     <small class="text-muted align-self-center">Approved request can still be rejected</small>
+                                                    <?php 
+                                                        $slotTime = strtotime($apt['slot_time']);
+                                                        $now = time();
+                                                        $diff = ($slotTime - $now) / 60;
+                                                        
+                                                        if (isset($apt['appointment_type']) && $apt['appointment_type'] === 'online') {
+                                                            // Always visible consultation actions
+                                                            echo '<hr class="my-2">';
+                                                            echo '<div class="text-center fw-bold text-primary mb-1" style="font-size:0.8rem;">ONLINE CONSULTATION</div>';
+                                                            
+                                                            // Time-locked Join button
+                                                            if ($diff <= 15 && $diff >= -60) {
+                                                                echo '<a href="consultation.php?doctor_id='.$doctor_id.'&patient_id='.$apt['patient_id'].'" class="btn btn-sm btn-success w-100 mb-2"><i class="bi bi-camera-video"></i> Join Live Call</a>';
+                                                            } else if ($diff > 15) {
+                                                                echo '<div class="mb-2 text-center small text-muted border rounded p-1 w-100 bg-light">Call starts '.date('h:i A', $slotTime).'</div>';
+                                                            } else {
+                                                                echo '<div class="mb-2 text-center small text-danger border rounded p-1 w-100 bg-light">Call Slot Expired</div>';
+                                                            }
+                                                            
+                                                            // Unlocked Report and Prescription buttons
+                                                            echo '<div class="d-flex gap-1">';
+                                                            echo '<button type="button" class="btn btn-sm btn-outline-info w-50" onclick="viewPatientReport('.$doctor_id.', '.$apt['patient_id'].')" title="View Patient Report"><i class="bi bi-file-earmark-medical"></i> Report</button>';
+                                                            echo '<button type="button" class="btn btn-sm btn-outline-primary w-50" onclick="openRxModal('.$doctor_id.', '.$apt['patient_id'].', \''.htmlspecialchars(addslashes($apt['patient_name'])).'\')" title="Write Prescription"><i class="bi bi-pencil-square"></i> Prescribe</button>';
+                                                            echo '</div>';
+                                                        } else {
+                                                            echo '<hr class="my-2">';
+                                                            echo '<div class="text-center fw-bold text-info mb-1" style="font-size:0.8rem;"><i class="bi bi-hospital"></i> OFFLINE VISIT</div>';
+                                                        }
+                                                    ?>
                                                 <?php elseif ($apt['status'] === 'rejected'): ?>
                                                     <small class="text-muted align-self-center">Rejected request can still be approved</small>
                                                 <?php endif; ?>
@@ -295,6 +330,99 @@ foreach ($appointments as $idx => $apt) {
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
+    <!-- Dash Prescription Modal -->
+    <div class="modal fade" id="dashPrescriptionModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title"><i class="bi bi-file-medical"></i> Write Prescription</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="dashPrintPrescriptionArea">
+            <div class="text-center mb-4 border-bottom pb-3">
+                <h3 class="text-primary fw-bold">HealthTech E-Prescription</h3>
+                <p class="mb-0"><strong>Doctor:</strong> Dr. <?php echo htmlspecialchars($_SESSION['name']); ?></p>
+                <p class="mb-0 text-muted">Patient: <strong id="rxPatientNameDisplay"></strong></p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold text-success"><i class="bi bi-capsule"></i> Rx (Medicines & Adjustments):</label>
+                <textarea class="form-control d-print-none border-success" id="dashRxInput" rows="6" placeholder="Example: Paracetamol 500mg 1+1+1 for 7 days..."></textarea>
+                <div class="d-none d-print-block mt-3" style="white-space: pre-wrap; font-size:1.15rem;" id="dashRxPrintView"></div>
+            </div>
+          </div>
+          <div class="modal-footer d-print-none bg-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-success" id="dashGenerateRxBtn" onclick="submitDashPrescription()"><i class="bi bi-cloud-upload"></i> Save & Send to Patient</button>
+            <button type="button" class="btn btn-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print locally</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        let currentRxDocId = 0;
+        let currentRxPatId = 0;
+        const rxModal = new bootstrap.Modal(document.getElementById('dashPrescriptionModal'));
+
+        function viewPatientReport(docId, patId) {
+            fetch('uploads/report_link_' + docId + '_' + patId + '.txt?time=' + new Date().getTime())
+            .then(res => {
+                if(!res.ok) throw new Error('Not found');
+                return res.text();
+            })
+            .then(url => {
+                if(url.trim() !== '') {
+                    window.open(url.trim(), '_blank');
+                } else {
+                    alert('Patient has not uploaded any report for this session yet.');
+                }
+            })
+            .catch(e => alert('Patient has not uploaded any report yet. Ask them to click "Show Report" in their portal.'));
+        }
+
+        function openRxModal(docId, patId, patName) {
+            currentRxDocId = docId;
+            currentRxPatId = patId;
+            document.getElementById('rxPatientNameDisplay').innerText = patName;
+            document.getElementById('dashRxInput').value = '';
+            rxModal.show();
+        }
+
+        function submitDashPrescription() {
+            const rxValue = document.getElementById('dashRxInput').value;
+            if(!rxValue.trim()) {
+                alert('Please write medicine before saving!');
+                return;
+            }
+            
+            const btn = document.getElementById('dashGenerateRxBtn');
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+            btn.disabled = true;
+
+            const fd = new FormData();
+            fd.append('doctor_id', currentRxDocId);
+            fd.append('patient_id', currentRxPatId);
+            fd.append('rx', rxValue);
+            
+            fetch('save_rx.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(data => {
+                btn.innerHTML = '<i class="bi bi-check-circle"></i> Saved & Sent!';
+                document.getElementById('dashRxPrintView').innerText = rxValue;
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="bi bi-cloud-upload"></i> Save & Send to Patient';
+                    btn.disabled = false;
+                    rxModal.hide();
+                    alert('Prescription successfully uploaded to patient portal!');
+                }, 1500);
+            })
+            .catch(e => {
+                alert('Error capturing prescription.');
+                btn.innerHTML = '<i class="bi bi-cloud-upload"></i> Save & Send to Patient';
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
 </html>

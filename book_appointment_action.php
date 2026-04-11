@@ -10,6 +10,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'patient') {
 
 $patient_id = $_SESSION['user_id'];
 $slot_id = $_POST['slot_id'] ?? null;
+$appointment_type = $_POST['appointment_type'] ?? 'offline';
+if (!in_array($appointment_type, ['online', 'offline'])) $appointment_type = 'offline';
 
 if ($slot_id <= 0) {
     die("Invalid slot ID.");
@@ -28,8 +30,8 @@ if (!$slot) {
 }
 
 // Insert appointment record
-$stmt = $conn->prepare("INSERT INTO appointments (patient_id, doctor_id, slot_time, status) VALUES (?, ?, ?, 'pending')");
-$stmt->bind_param('iis', $patient_id, $slot['doctor_id'], $slot['slot_time']);
+$stmt = $conn->prepare("INSERT INTO appointments (patient_id, doctor_id, slot_time, status, appointment_type) VALUES (?, ?, ?, 'pending', ?)");
+$stmt->bind_param('iiss', $patient_id, $slot['doctor_id'], $slot['slot_time'], $appointment_type);
 $stmt->execute();
 $stmt->close();
 
