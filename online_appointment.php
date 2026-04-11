@@ -10,23 +10,28 @@ require_once "db.php";
 $message = '';
 $msg_type = 'success';
 
+// Handle Appointment Submission (POST)
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $doctor_id = intval($_POST['doctor_id'] ?? 0);
     $slot_time = $_POST['appointment_date'] ?? '';
-    // Format the date string if needed, but MySQL allows standard Y-m-d gracefully.
-    // Ensure there is some default parsing just in case.
     $patient_id = $_SESSION["user_id"];
     
+    // Additional fields
+    $patient_name = $_POST['patient_name'] ?? '';
+    $patient_email = $_POST['patient_email'] ?? '';
+    $patient_phone = $_POST['patient_phone'] ?? '';
+    $address = $_POST['address'] ?? '';
+    $gender = $_POST['gender'] ?? '';
+
     if ($doctor_id > 0 && !empty($slot_time)) {
-        // basic format check: if it's just a date, append time
         if (strlen($slot_time) <= 10) {
-            $slot_time .= " 10:00:00"; // default to 10 am if no time provided by user
+            $slot_time .= " 10:00:00"; 
         }
         
         $stmt = $conn->prepare("INSERT INTO appointments (patient_id, doctor_id, slot_time, status) VALUES (?, ?, ?, 'pending')");
         $stmt->bind_param("iis", $patient_id, $doctor_id, $slot_time);
         if ($stmt->execute()) {
-            $message = "Appointment request sent successfully! Please wait for the doctor's confirmation.";
+            $message = "Appointment request sent successfully!";
             $msg_type = "success";
         } else {
             $message = "Error sending request. Please try again.";
@@ -39,249 +44,225 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
+// Handle Doctor Filtering (GET) - copied from doctor_search logic
 $doctors = [];
-$stmt = $conn->prepare("SELECT id, name, specialty FROM users WHERE role = 'doctor' AND status = 'active'");
-$stmt->execute();
-$res = $stmt->get_result();
-while ($row = $res->fetch_assoc()) {
-    $doctors[] = $row;
+$search_query = "SELECT id, name, specialty, location FROM users WHERE role = 'doctor' AND status = 'active'";
+$where = [];
+$params = [];
+$types = "";
+
+if (!empty($_GET['name'])) {
+    $where[] = "name LIKE ?";
+    $params[] = '%' . $_GET['name'] . '%';
+    $types .= 's';
 }
-$stmt->close();
+if (!empty($_GET['location'])) {
+    $where[] = "location LIKE ?";
+    $params[] = '%' . $_GET['location'] . '%';
+    $types .= 's';
+}
+if (!empty($_GET['specialty'])) {
+    $where[] = "specialty LIKE ?";
+    $params[] = '%' . $_GET['specialty'] . '%';
+    $types .= 's';
+}
+
+if (!empty($where)) {
+    $search_query .= ' AND ' . implode(' AND ', $where);
+}
+
+$stmt = $conn->prepare($search_query);
+if ($stmt) {
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $doctors[] = $row;
+    }
+    $stmt->close();
+}
+
+// Fetch all doctor names for the dropdown
+$all_doctor_names = [];
+$name_results = $conn->query("SELECT DISTINCT name FROM users WHERE role = 'doctor' ORDER BY name ASC");
+if ($name_results) {
+    while ($row = $name_results->fetch_assoc()) {
+        $all_doctor_names[] = $row['name'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Appointment</title>
+    <title>Online Appointment | HealthTech</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <style>
-        /* Modern Premium Aesthetic */
-        body { 
-            padding-top: 80px; 
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            min-height: 100vh;
-            font-family: 'Inter', 'Open Sans', sans-serif; 
-        }
-        .page-title { 
-            color: #1ba5c6; 
-            font-size: 0.95rem; 
-            font-weight: 700; 
-            text-align: center; 
-            margin-bottom: 8px; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .page-heading { 
-            color: #1e293b; 
-            font-weight: 800; 
-            text-align: center; 
-            margin-bottom: 45px; 
-            font-size: 2.2rem;
-        }
-        /* Glass/Premium Card */
-        .card-custom { 
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            border-radius: 20px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.04), 0 5px 15px rgba(0,0,0,0.02); 
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.06), 0 5px 15px rgba(0,0,0,0.03); 
-        }
-        
-        .form-control-custom, .form-select-custom {
-            background-color: #f8fafc;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 14px 15px;
-            padding-left: 48px; /* space for icon */
-            font-weight: 500;
-            color: #334155;
-            transition: all 0.25s ease;
-        }
-        
-        .form-control-custom:focus, .form-select-custom:focus {
-            background-color: #ffffff;
-            border-color: #1ba5c6;
-            box-shadow: 0 0 0 4px rgba(27, 165, 198, 0.1);
-            outline: none;
-        }
-        
-        .input-icon-wrapper { position: relative; }
-        .input-icon-wrapper i {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 1.2rem;
-            transition: color 0.2s ease;
-        }
-        /* Icon glows when input is focused */
-        .input-icon-wrapper:focus-within i {
-            color: #1ba5c6;
-        }
-
-        .select-wrapper { position: relative; }
-        .select-no-icon { padding-left: 18px !important; }
-        
-        .form-label { 
-            font-weight: 600; 
-            color: #64748b; 
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-premium {
-            background: linear-gradient(135deg, #1ba5c6 0%, #107b95 100%);
-            color: #ffffff;
-            font-weight: 700;
-            border: none;
-            border-radius: 10px;
-            padding: 14px 35px;
-            font-size: 1.05rem;
-            box-shadow: 0 8px 20px rgba(27, 165, 198, 0.25);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-        .btn-premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(27, 165, 198, 0.35);
-            color: #ffffff;
-        }
-        .btn-premium:active {
-            transform: translateY(1px);
-        }
+        body { padding-top: 80px; background-color: #f8fafc; }
+        .nav-pills .nav-link.active { background-color: transparent !important; color: #17a2b8 !important; font-weight: bold; }
+        .card-custom { border-radius: 12px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .form-label { font-weight: 600; color: #64748b; font-size: 0.85rem; }
+        .btn-premium { background-color: #17a2b8; color: white; font-weight: 600; }
+        .banner-teal { background-color: #17a2b8; color: white; font-size: 1.5rem; font-weight: bold; font-family: serif; }
     </style>
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-info fixed-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.php">
-                <i class="bi bi-heart-pulse-fill me-2"></i>
-                <span>HealthTech</span>
+            <a class="navbar-brand d-flex align-items-center fw-bold" href="index.php">
+                <i class="bi bi-heart-pulse-fill me-2"></i> HealthTech
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ms-auto me-3">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
                     <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
-                </ul>
-                <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link active" href="online_appointment.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <div class="page-title">Online Appointment</div>
-        <h2 class="page-heading">Drop us a message for any query</h2>
-
-        <?php if ($message): ?>
-            <div class="row justify-content-center mb-4">
-                <div class="col-lg-8">
-                    <div class="alert alert-<?php echo $msg_type; ?> shadow-sm text-center fw-bold">
-                        <?php echo htmlspecialchars($message); ?>
-                    </div>
+    <main class="container mt-5 pb-5">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 border-end pe-4">
+                <h4 class="mb-4" style="border-bottom: 2px solid #17a2b8; display: inline-block; padding-bottom: 8px; color: #333;">Book Appointment</h4>
+                <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <button class="nav-link active text-start py-3 mb-2 text-muted" id="v-pills-name-tab" data-bs-toggle="pill" data-bs-target="#v-pills-name" type="button" role="tab" style="border-radius: 0;">Doctor Name Wise</button>
+                    <button class="nav-link text-start py-3 mb-2 text-muted" id="v-pills-hospital-tab" data-bs-toggle="pill" data-bs-target="#v-pills-hospital" type="button" role="tab" style="border-radius: 0;">Hospital Wise</button>
+                    <button class="nav-link text-start py-3 text-muted" id="v-pills-specialty-tab" data-bs-toggle="pill" data-bs-target="#v-pills-specialty" type="button" role="tab" style="border-radius: 0;">Specialty Wise</button>
                 </div>
             </div>
-        <?php endif; ?>
 
-        <form action="" method="POST">
-            <div class="row g-4 justify-content-center">
-                <!-- Left Column: Select Doctor -->
-                <div class="col-lg-4">
-                    <div class="card card-custom h-100 p-4">
-                        <h5 class="mb-4" style="font-weight: 800; color: #1e293b;">Select Doctor</h5>
-                        <div class="select-wrapper">
-                            <select name="doctor_id" class="form-select form-select-custom select-no-icon w-100" required>
-                                <option value="">Search by consultant name</option>
-                                <?php foreach ($doctors as $doc): ?>
-                                    <option value="<?php echo htmlspecialchars($doc['id']); ?>">
-                                        <?php echo htmlspecialchars($doc['name'] . " (" . $doc['specialty'] . ")"); ?>
-                                    </option>
+            <!-- Main Content Area -->
+            <div class="col-md-9 ps-4">
+                <?php if ($message): ?>
+                    <div class="alert alert-<?php echo $msg_type; ?> shadow-sm text-center fw-bold mb-4">
+                        <?php echo htmlspecialchars($message); ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Step 1: Search Section -->
+                <div class="tab-content mb-5" id="v-pills-tabContent">
+                    <!-- Name Tab -->
+                    <div class="tab-pane fade show active" id="v-pills-name" role="tabpanel">
+                        <div class="p-3 mb-4 text-center banner-teal">FIND YOUR DOCTOR</div>
+                        <form method="get">
+                            <label class="form-label mb-2">Search by Doctor Name</label>
+                            <select name="name" class="form-select mb-3">
+                                <option value="">Select Doctor Name</option>
+                                <?php foreach ($all_doctor_names as $dn): ?>
+                                    <option value="<?php echo htmlspecialchars($dn); ?>"><?php echo htmlspecialchars($dn); ?></option>
                                 <?php endforeach; ?>
                             </select>
-                        </div>
+                            <button type="submit" class="btn btn-premium px-4 float-end">Filter List</button>
+                        </form>
+                    </div>
+
+                    <!-- Hospital Tab -->
+                    <div class="tab-pane fade" id="v-pills-hospital" role="tabpanel">
+                        <div class="p-3 mb-4 text-center banner-teal">FIND YOUR DOCTOR</div>
+                        <form method="get">
+                            <label class="form-label mb-2">Search by Hospital Name</label>
+                            <select name="location" class="form-select mb-3">
+                                <option value="">Select Hospital</option>
+                                <option value="Dhaka Medical College">Dhaka Medical College Hospital</option>
+                                <option value="Square Hospital">Square Hospital</option>
+                                <option value="Evercare Hospital">Evercare Hospital</option>
+                                <option value="Labaid Hospital">Labaid Hospital</option>
+                                <option value="United Hospital">United Hospital</option>
+                                <option value="Ibne Sina Hospital">Ibne Sina Hospital</option>
+                                <option value="Popular Medical College">Popular Medical College Hospital</option>
+                                <option value="BIRDEM General Hospital">BIRDEM General Hospital</option>
+                                <option value="BSMMU">Bangabandhu Sheikh Mujib Medical University</option>
+                            </select>
+                            <button type="submit" class="btn btn-premium px-4 float-end">Filter List</button>
+                        </form>
+                    </div>
+
+                    <!-- Specialty Tab -->
+                    <div class="tab-pane fade" id="v-pills-specialty" role="tabpanel">
+                        <div class="p-3 mb-4 text-center banner-teal">FIND YOUR DOCTOR</div>
+                        <form method="get">
+                            <label class="form-label mb-2">Search By Speciality/Department name</label>
+                            <select name="specialty" class="form-select mb-3">
+                                <option value="">Select Specialty</option>
+                                <option value="Cardiology Specialist">Cardiology Specialist</option>
+                                <option value="Pediatrician">Pediatrician</option>
+                                <option value="Medicine Specialist">Medicine Specialist</option>
+                                <option value="Dermatologist">Dermatologist</option>
+                                <option value="Neurosurgeon">Neurosurgeon</option>
+                            </select>
+                            <button type="submit" class="btn btn-premium px-4 float-end">Filter List</button>
+                        </form>
                     </div>
                 </div>
 
-            <!-- Right Column: Make an Appointment -->
-            <div class="col-lg-8">
-                <div class="card card-custom p-4">
-                    <h5 class="mb-4" style="font-weight: 800; color: #1e293b;">Make An Appointment -</h5>
+                <div class="clearfix"></div>
+
+                <!-- Step 2: Booking Form -->
+                <div class="card card-custom p-4 mt-4" style="background: white; border-top: 5px solid #17a2b8;">
+                    <div class="p-3 mb-4 text-center banner-teal">MAKE AN APPOINTMENT</div>
+                    <form action="online_appointment.php" method="POST">
                         <div class="row g-4">
+                            <div class="col-12">
+                                <label class="form-label">Step 1: Select Doctor from Result</label>
+                                <select name="doctor_id" class="form-select border-info" required>
+                                    <option value="">-- Select Available Doctor --</option>
+                                    <?php foreach ($doctors as $doc): ?>
+                                        <option value="<?php echo $doc['id']; ?>" <?php echo (isset($_GET['name']) && $_GET['name'] == $doc['name']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($doc['name'] . " (" . $doc['specialty'] . ") - " . $doc['location']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <p class="text-muted small mt-1"><i class="bi bi-info-circle me-1"></i> The list above is filtered by your search selection.</p>
+                            </div>
+                            
                             <div class="col-md-6">
-                                <label class="form-label text-muted small mb-1">Patient Name</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-person"></i>
-                                    <input type="text" name="patient_name" class="form-control form-control-custom" placeholder="Enter Patient Name" required>
-                                </div>
+                                <label class="form-label">Patient Name</label>
+                                <input type="text" name="patient_name" class="form-control" placeholder="Enter Name" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-muted small mb-1">Email</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-envelope"></i>
-                                    <input type="email" name="patient_email" class="form-control form-control-custom" placeholder="Enter Your Email" required>
-                                </div>
+                                <label class="form-label">Email</label>
+                                <input type="email" name="patient_email" class="form-control" placeholder="Email" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-muted small mb-1">Phone</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-phone"></i>
-                                    <input type="text" name="patient_phone" class="form-control form-control-custom" placeholder="Enter Your Phone" required>
-                                </div>
+                                <label class="form-label">Phone</label>
+                                <input type="text" name="patient_phone" class="form-control" placeholder="Phone" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-muted small mb-1">Address</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-building"></i>
-                                    <input type="text" name="address" class="form-control form-control-custom" placeholder="Enter Your Address">
-                                </div>
+                                <label class="form-label">Gender</label>
+                                <select name="gender" class="form-select">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-muted small mb-1">Gender</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-person-badge"></i>
-                                    <select name="gender" class="form-select form-select-custom">
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
+                                <label class="form-label">Appointment Date</label>
+                                <input type="date" name="appointment_date" class="form-control" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-muted small mb-1">Appointment Date</label>
-                                <div class="input-icon-wrapper">
-                                    <i class="bi bi-calendar"></i>
-                                    <input type="date" name="appointment_date" class="form-control form-control-custom" required>
-                                </div>
+                                <label class="form-label">Address</label>
+                                <input type="text" name="address" class="form-control" placeholder="City/Area">
                             </div>
                         </div>
-                        <div class="mt-4 pt-3 text-end">
-                            <button type="submit" class="btn btn-premium w-100"><i class="bi bi-send me-2"></i> Submit Booking Request</button>
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-premium w-100 py-3"><i class="bi bi-calendar-check me-2"></i> Confirm Booking Request</button>
                         </div>
+                    </form>
                 </div>
             </div>
         </div>
-        </form>
-    </div>
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

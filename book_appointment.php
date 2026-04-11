@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'patient') {
 
 $patient_id = $_SESSION['user_id'];
 $doctor_id = $_GET['doctor_id'] ?? null;
+$selected_slot_id = $_GET['slot_id'] ?? null;
 
 // Fetch doctor details
 if ($doctor_id) {
@@ -28,8 +29,14 @@ if ($doctor_id) {
 // Fetch available slots for the doctor
 $slots = [];
 if ($doctor_id) {
-    $stmt = $conn->prepare("SELECT id, slot_time FROM schedule_slots WHERE doctor_id = ? AND slot_status = 'available' ORDER BY slot_time ASC");
-    $stmt->bind_param("i", $doctor_id);
+    if ($selected_slot_id) {
+        // If a specific slot is selected, fetch it specifically but also fetch others for choice
+        $stmt = $conn->prepare("SELECT id, slot_time FROM schedule_slots WHERE doctor_id = ? AND (slot_status = 'available' OR id = ?) AND slot_time > NOW() ORDER BY slot_time ASC");
+        $stmt->bind_param("ii", $doctor_id, $selected_slot_id);
+    } else {
+        $stmt = $conn->prepare("SELECT id, slot_time FROM schedule_slots WHERE doctor_id = ? AND slot_status = 'available' AND slot_time > NOW() ORDER BY slot_time ASC");
+        $stmt->bind_param("i", $doctor_id);
+    }
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
@@ -72,13 +79,20 @@ if ($doctor_id) {
                 </thead>
                 <tbody>
                     <?php foreach ($slots as $index => $slot): ?>
-                        <tr>
+                        <tr class="<?php echo ($selected_slot_id == $slot['id']) ? 'table-primary fw-bold' : ''; ?>">
                             <td><?php echo $index + 1; ?></td>
-                            <td><?php echo htmlspecialchars((new DateTime($slot['slot_time']))->format('Y-m-d H:i')); ?></td>
+                            <td>
+                                <?php echo htmlspecialchars((new DateTime($slot['slot_time']))->format('D, Y-m-d h:i A')); ?>
+                                <?php if ($selected_slot_id == $slot['id']): ?>
+                                    <span class="badge bg-primary ms-2">Selected</span>
+                                <?php endif; ?>
+                            </td>
                             <td>
                                 <form method="POST" action="book_appointment_action.php">
                                     <input type="hidden" name="slot_id" value="<?php echo $slot['id']; ?>">
-                                    <button type="submit" class="btn btn-primary">Book this slot</button>
+                                    <button type="submit" class="btn <?php echo ($selected_slot_id == $slot['id']) ? 'btn-success' : 'btn-primary'; ?>">
+                                        <?php echo ($selected_slot_id == $slot['id']) ? 'Confirm Booking' : 'Book this slot'; ?>
+                                    </button>
                                 </form>
                             </td>
                         </tr>

@@ -212,6 +212,7 @@ if ($name_results) {
                 <?php if (count($doctors) > 0): ?>
                     <div class="row gy-4">
                         <?php foreach ($doctors as $doctor): ?>
+<<<<<<< HEAD
                             <div class="col-md-6 col-lg-4">
                                 <div class="card shadow-sm h-100 border-0" style="border-top: 4px solid #17a2b8 !important; border-radius: 8px;">
                                     <div class="card-body p-4">
@@ -223,6 +224,19 @@ if ($name_results) {
                                             <p class="mb-0 text-muted small"><i class="bi bi-telephone me-2"></i><?php echo htmlspecialchars($doctor['phone']); ?></p>
                                         </div>
                                         <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-sm w-100 text-white mt-2 py-2" style="background-color: #17a2b8; font-weight: 600;">Book Appointment</a>
+=======
+                            <div class="col-md-6">
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-1"><?php echo htmlspecialchars($doctor['name']); ?></h5>
+                                        <p class="text-muted small mb-2"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['hospital']); ?> • <?php echo htmlspecialchars($doctor['location']); ?></p>
+                                        <p class="mb-1"><strong>Email:</strong> <?php echo htmlspecialchars($doctor['email']); ?></p>
+                                        <p class="mb-3"><strong>Phone:</strong> <?php echo htmlspecialchars($doctor['phone']); ?></p>
+                                        <div class="d-flex gap-2">
+                                            <a href="view_availability.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-outline-primary shadow-sm">View Availability</a>
+                                            <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary shadow-sm">Book Appointment</a>
+                                        </div>
+>>>>>>> 4e82a24f4d65d8b5e6454986d298e8f21b9a21f3
                                     </div>
                                 </div>
                             </div>
@@ -238,7 +252,7 @@ if ($name_results) {
                 
             </div>
         </div>
-        
+         
         <style>
             .nav-pills .nav-link.active {
                 background-color: transparent !important;
@@ -247,6 +261,7 @@ if ($name_results) {
             }
             .uppercase { text-transform: uppercase; }
         </style>
+
     </main>
 
     <section id="about" class="py-5 bg-light">

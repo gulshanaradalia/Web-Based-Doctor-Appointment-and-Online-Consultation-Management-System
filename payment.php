@@ -5,11 +5,11 @@ require_once 'db.php';
 function getSupportedPaymentMethods()
 {
     return [
-        'credit_card' => 'Credit Card',
-        'debit_card' => 'Debit Card',
-        'mobile_banking' => 'Mobile Banking',
-        'net_banking' => 'Net Banking',
-        'wallet' => 'Digital Wallet'
+        'bkash' => 'bKash',
+        'nagad' => 'Nagad',
+        'rocket' => 'Rocket',
+        'card' => 'Debit/Credit Card',
+        'cash' => 'Cash on Visit'
     ];
 }
 function dummyProcessPayment($amount, $method)
