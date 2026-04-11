@@ -29,9 +29,26 @@ body {
     transition: color 0.2s;
 }
 
-.navbar .nav-link:hover,
-.navbar .nav-link.active {
+.navbar .nav-link:hover {
     color: var(--secondary-color) !important;
+}
+
+.navbar .nav-link.active {
+    color: #ffffff !important;
+    font-weight: 700;
+    position: relative;
+}
+
+.navbar .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 10%;
+    width: 80%;
+    height: 3px;
+    background-color: var(--accent-color);
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
 .navbar-brand {
@@ -556,3 +573,50 @@ footer a:hover {
 .bg-light {
     background-color: var(--light-bg) !important;
 }
+
+
+/* ---------- Find a Doctor Custom UI ---------- */
+.doctor-hero-header { 
+    background-color: #1a222c; 
+    background-image: linear-gradient(135deg, rgba(15,25,35,0.85) 0%, rgba(5,10,15,0.98) 100%), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1920&q=80'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    padding: 7rem 0 9rem 0; 
+    color: #ffffff; 
+    text-align: center; 
+    position: relative; 
+}
+.doctor-hero-header h1 { font-weight: 700; margin-bottom: 0.5rem; font-size: 2.5rem; }
+.doctor-breadcrumb { color: #a0aec0; font-size: 0.95rem; }
+.doctor-breadcrumb a { color: #e2e8f0; text-decoration: none; }
+.doctor-breadcrumb span.separator { color: #16a0be; margin: 0 0.5rem; font-size: 0.8rem; }
+
+.floating-search-card { background: #ffffff; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 2rem; max-width: 800px; margin: -5rem auto 3rem auto; position: relative; z-index: 10; border: 1px solid #eaedf3; }
+.search-input-group { display: flex; align-items: center; position: relative; }
+.search-input-group .form-control { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0.85rem 1.2rem; cursor: pointer; }
+.search-input-group i.bi-chevron-down { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: #cbd5e1; pointer-events: none; }
+.btn-search-green { background-color: #1c9b63; color: #fff; border: none; border-radius: 4px; padding: 0.85rem 2rem; margin-left: 0.75rem; min-width: 80px; transition: background 0.2s; }
+.btn-search-green:hover { background-color: #168051; color: #fff; }
+.btn-search-yellow { background-color: #febc12; color: #1a202c; border: none; border-radius: 4px; padding: 0.85rem 2rem; margin-left: 0.75rem; min-width: 80px; transition: background 0.2s; }
+.btn-search-yellow:hover { background-color: #e5a910; }
+.search-divider { text-align: center; color: #718096; margin: 1rem 0; font-size: 0.9rem; font-weight: 500; }
+
+.specialty-card { background: #ffffff; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); padding: 2rem 1.5rem; text-align: center; height: 100%; position: relative; overflow: hidden; border: 1px solid rgba(0,0,0,0.03); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; }
+.specialty-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); text-decoration: none; }
+.watermark-heart { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14rem; color: #eaf7fb; opacity: 0.7; z-index: 1; pointer-events: none; }
+.specialty-content { position: relative; z-index: 2; display:flex; flex-direction:column; align-items:center; height: 100%; }
+.specialty-icon-circle { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #1ba5c6; color: #1ba5c6; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: #ffffff; margin-bottom: 1.5rem; align-self: flex-start; }
+.specialty-card h5 { font-weight: 700; color: #1a293b; font-size: 1.1rem; margin-top: auto; margin-bottom: 1.5rem; line-height:1.4; }
+.specialty-card .see-consultants { color: #1ba5c6; font-size: 0.85rem; font-weight: 600; display:block; }
+
+
+
+/* Mega Menu Style */
+.mega-menu-wrapper { background-color: #0088b5; border-top: 3px solid #ea4335; padding: 40px 0; color: #ffffff; margin-top: 1rem; }
+.mega-menu-column { border-right: 1px solid rgba(0,0,0,0.15); padding: 0 40px; }
+.mega-menu-column:last-child { border-right: none; }
+.mega-menu-link { display: block; color: #ffffff; text-decoration: none; font-size: 0.95rem; margin-bottom: 22px; font-weight: 500; transition: color 0.15s; }
+.mega-menu-link:hover { color: #ffd700; text-decoration: none; }
+@media (max-width: 768px) { .mega-menu-column { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.15); padding: 20px 15px; } .mega-menu-column:last-child { border-bottom: none; } }
+
