@@ -126,7 +126,10 @@ if ($stmt) {
                                         <p class="text-muted small mb-2"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['hospital']); ?> • <?php echo htmlspecialchars($doctor['location']); ?></p>
                                         <p class="mb-1"><strong>Email:</strong> <?php echo htmlspecialchars($doctor['email']); ?></p>
                                         <p class="mb-3"><strong>Phone:</strong> <?php echo htmlspecialchars($doctor['phone']); ?></p>
-                                        <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary">Book Appointment</a>
+                                        <div class="d-flex gap-2">
+                                            <a href="view_availability.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-outline-primary shadow-sm">View Availability</a>
+                                            <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary shadow-sm">Book Appointment</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -177,7 +180,10 @@ if ($stmt) {
                                 <p class="text-muted small mb-2"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['hospital']); ?> • <?php echo htmlspecialchars($doctor['location']); ?></p>
                                 <p class="mb-1"><strong>Email:</strong> <?php echo htmlspecialchars($doctor['email']); ?></p>
                                 <p class="mb-3"><strong>Phone:</strong> <?php echo htmlspecialchars($doctor['phone']); ?></p>
-                                <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary">Book Appointment</a>
+                                <div class="d-flex gap-2">
+                                    <a href="view_availability.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-outline-primary shadow-sm">View Availability</a>
+                                    <a href="book_appointment.php?doctor_id=<?php echo $doctor['id']; ?>" class="btn btn-primary shadow-sm">Book Appointment</a>
+                                </div>
                             </div>
                         </div>
                     </div>
