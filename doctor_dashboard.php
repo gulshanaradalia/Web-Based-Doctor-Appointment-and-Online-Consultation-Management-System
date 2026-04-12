@@ -175,11 +175,11 @@ foreach ($appointments as $idx => $apt) {
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link btn btn-light btn-sm text-primary px-3" href="register.php">Online Appointment</a></li>
+                    <li class="nav-item"><a class="nav-link" href="online_appointment.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>

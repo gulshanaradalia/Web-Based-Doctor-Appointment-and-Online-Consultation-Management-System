@@ -64,23 +64,3 @@ CREATE TABLE IF NOT EXISTS payments (
   FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
-CREATE TABLE IF NOT EXISTS consultations (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  appointment_id INT NULL,
-  patient_id INT NOT NULL,
-  doctor_id INT NOT NULL,
-  consultation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  duration_minutes INT NULL,
-  symptoms TEXT NULL,
-  diagnosis TEXT NULL,
-  prescription TEXT NULL,
-  notes TEXT NULL,
-  status ENUM('scheduled','completed','cancelled') NOT NULL DEFAULT 'scheduled',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE SET NULL,
-  FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE
-);
-

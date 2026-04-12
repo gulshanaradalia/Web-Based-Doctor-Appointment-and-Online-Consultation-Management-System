@@ -9,7 +9,7 @@ session_start();
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Appointment & Online Consultation</title>
+    <title>HealthTech - Doctor Appointment Management System</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -39,7 +39,7 @@ session_start();
                     <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link btn btn-light btn-sm text-primary px-3" href="register.php">Online Appointment</a></li>
+                    <li class="nav-item"><a class="nav-link" href="online_appointment.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>
@@ -49,7 +49,7 @@ session_start();
     <header class="hero position-relative text-center text-dark d-flex align-items-center">
         <div class="container">
             <h1 class="display-4 fw-bold mb-3">Your Health, Our Technology</h1>
-            <p class="lead mb-4">Trusted doctors at your fingertips. Book appointments and online consultations instantly.</p>
+            <p class="lead mb-4">Trusted doctors at your fingertips. Book your medical appointments instantly and securely.</p>
             <div class="d-flex flex-column align-items-center">
                 <a href="login.php" class="btn btn-lg btn-dark mb-3 w-100" style="max-width: 320px;">Login</a>
                 <a href="register.php" class="btn btn-lg btn-accent w-100" style="max-width: 320px;">Register</a>
@@ -70,7 +70,6 @@ session_start();
                 <?php $homeSteps = [
                     ['title' => 'Find Doctors', 'description' => 'Filter by location, specialty or availability.', 'icon' => 'bi-search'],
                     ['title' => 'Appointment Booking', 'description' => 'Schedule your consultation easily at any time that suits you.', 'icon' => 'bi-calendar-check'],
-                    ['title' => 'Online Consultation', 'description' => 'Start audio or video calls with specialists from home.', 'icon' => 'bi-camera-video'],
                     ['title' => 'Digital Reports', 'description' => 'Receive prescriptions and feedback online.', 'icon' => 'bi-file-earmark-medical-fill'],
                     ['title' => 'Secure Payments', 'description' => 'Pay consultation fees safely through our portal.', 'icon' => 'bi-credit-card-2-back-fill'],
                 ]; ?>

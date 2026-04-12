@@ -30,10 +30,10 @@ session_start();
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
                     <li class="nav-item"><a class="nav-link active" href="contact.php">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="login.php"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="register.php"><i class="bi bi-person-plus"></i> Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="online_appointment.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>

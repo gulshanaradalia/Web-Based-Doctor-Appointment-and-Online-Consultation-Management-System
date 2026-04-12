@@ -117,11 +117,11 @@ $confirm_stmt->close();
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link btn btn-light btn-sm text-primary px-3" href="register.php">Online Appointment</a></li>
+                    <li class="nav-item"><a class="nav-link" href="online_appointment.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>
@@ -195,8 +195,6 @@ $confirm_stmt->close();
                                             <th>Specialty</th>
                                             <th>Slot</th>
                                             <th>Consultation Fee</th>
-                                            <th>Queue</th>
-                                            <th>Waiting Time</th>
                                             <th>Booking Status</th>
                                             <th>Payment</th>
                                             <th>Confirmation</th>
@@ -210,8 +208,6 @@ $confirm_stmt->close();
                                                 <td><?php echo htmlspecialchars($apt['specialty']); ?></td>
                                                 <td><?php echo htmlspecialchars((new DateTime($apt['slot_time']))->format('Y-m-d H:i')); ?></td>
                                                 <td><?php echo htmlspecialchars(number_format((float)$apt['consultation_fee'], 2)); ?> BDT</td>
-                                                <td><?php echo htmlspecialchars($apt['queue_position'] ?? '-'); ?></td>
-                                                <td><?php echo isset($apt['estimated_wait']) ? htmlspecialchars($apt['estimated_wait'] . ' mins') : '-'; ?></td>
                                                 <td>
                                                     <span class="badge bg-<?php echo $apt['status'] === 'approved' ? 'success' : ($apt['status'] === 'pending' ? 'warning' : 'danger'); ?>">
                                                         <?php echo ucfirst($apt['status']); ?>
@@ -329,11 +325,11 @@ $confirm_stmt->close();
                         <div class="mb-3">
                             <label for="payment_method" class="form-label">Payment Method</label>
                             <select id="payment_method" class="form-select" required>
-                                <option value="credit_card">Credit Card</option>
-                                <option value="debit_card">Debit Card</option>
-                                <option value="mobile_banking">Mobile Banking</option>
-                                <option value="net_banking">Net Banking</option>
-                                <option value="wallet">Digital Wallet</option>
+                                <option value="cash">Cash on Visit</option>
+                                <option value="bkash">bKash</option>
+                                <option value="nagad">Nagad</option>
+                                <option value="rocket">Rocket</option>
+                                <option value="card">Debit/Credit Card</option>
                             </select>
                         </div>
 
