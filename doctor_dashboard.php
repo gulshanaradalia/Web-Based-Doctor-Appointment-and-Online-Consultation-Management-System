@@ -141,6 +141,17 @@ foreach ($appointments as $idx => $apt) {
 
     $appointments[$idx]['queue_position'] = isset($queueData['queue_position']) ? (int)$queueData['queue_position'] : 1;
 }
+
+/* Fetch Admin Notifications */
+$admin_notifications = [];
+$notif_stmt = $conn->prepare("SELECT title, message, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
+$notif_stmt->bind_param('i', $doctor_id);
+$notif_stmt->execute();
+$notif_res = $notif_stmt->get_result();
+while ($row = $notif_res->fetch_assoc()) {
+    $admin_notifications[] = $row;
+}
+$notif_stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -199,6 +210,24 @@ foreach ($appointments as $idx => $apt) {
                 </div>
             </aside>
             <section class="col-lg-9">
+                <?php if (!empty($admin_notifications)): ?>
+                <!-- Admin Notification / Message Trigger -->
+                <div class="alert alert-info border-0 shadow-sm mb-4 d-flex justify-content-between align-items-center bg-white border-start border-4 border-info">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-info bg-opacity-10 p-2 rounded-circle me-3">
+                            <i class="bi bi-bell-fill text-info fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Official Announcements</h6>
+                            <small class="text-muted">You have <?php echo count($admin_notifications); ?> important updates from Admin.</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-info btn-sm text-white px-3 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#adminNotifModal">
+                        <i class="bi bi-envelope-open-fill me-1"></i> Check Notification
+                    </button>
+                </div>
+                <?php endif; ?>
+
                 <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
                     <h2>Doctor Dashboard</h2>
                     <p>Welcome Dr. <?php echo htmlspecialchars($_SESSION['name']); ?></p>
@@ -424,5 +453,35 @@ foreach ($appointments as $idx => $apt) {
             });
         }
     </script>
+
+    <!-- Admin Notification Modal -->
+    <div class="modal fade" id="adminNotifModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-info text-white py-3">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-megaphone-fill me-2"></i> Official Announcements</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="list-group list-group-flush">
+                        <?php foreach ($admin_notifications as $notif): ?>
+                        <div class="list-group-item p-4 border-0 border-bottom">
+                            <div class="d-flex w-100 justify-content-between mb-2">
+                                <h6 class="mb-0 fw-bold text-primary"><?php echo htmlspecialchars($notif['title']); ?></h6>
+                                <small class="badge bg-light text-muted border"><?php echo date('M d, Y', strtotime($notif['created_at'])); ?></small>
+                            </div>
+                            <p class="mb-0 text-secondary small" style="line-height: 1.6;">
+                                <?php echo nl2br(htmlspecialchars($notif['message'])); ?>
+                            </p>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 py-2">
+                    <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
