@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS appointments (
   patient_id INT NOT NULL,
   doctor_id INT NOT NULL,
   slot_time DATETIME NOT NULL,
+  appointment_type ENUM('offline','online') NOT NULL DEFAULT 'offline',
   status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
