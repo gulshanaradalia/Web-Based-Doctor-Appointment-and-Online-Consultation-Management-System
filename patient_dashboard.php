@@ -391,7 +391,15 @@ $notif_stmt->close();
 
             var appointmentId = document.getElementById('selectedAppointmentId').value;
             var amount = document.getElementById('displayAmount').value.trim();
-            var paymentMethod = document.getElementById('payment_method').value;
+            var rawPaymentMethod = document.getElementById('payment_method').value;
+            var paymentMethodMap = {
+                'cash': 'wallet',
+                'bkash': 'mobile_banking',
+                'nagad': 'mobile_banking',
+                'rocket': 'mobile_banking',
+                'card': 'credit_card'
+            };
+            var paymentMethod = paymentMethodMap[rawPaymentMethod] || 'wallet';
 
             var submitBtn = this.querySelector('button[type="submit"]');
             var originalText = submitBtn.innerHTML;
