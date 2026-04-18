@@ -253,7 +253,7 @@ if ($name_results) {
 
         <h3 class="mt-5 mb-4">Recommended Doctors</h3>
         <?php
-        $query_partner = "SELECT id, name, email, phone, location, specialty FROM users WHERE role = 'doctor' AND status = 'active' LIMIT 4";
+        $query_partner = "SELECT id, name, email, phone, location, specialty FROM users WHERE role = 'doctor' AND status = 'active' AND is_recommended = 1 LIMIT 4";
         $stmt_partner = $conn->prepare($query_partner);
         if ($stmt_partner) {
             $stmt_partner->execute();
