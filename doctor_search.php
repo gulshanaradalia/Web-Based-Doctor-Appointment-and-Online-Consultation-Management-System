@@ -120,12 +120,11 @@ if ($name_results) {
                         <form method="get" action="doctor_search.php">
                             <div class="mt-4">
                                 <label style="color: #17a2b8; font-weight: 600; font-size: 0.95rem;" class="mb-2">Search by Doctor Name</label>
-                                <select name="name" class="form-select border-1 shadow-none py-2 text-muted">
-                                    <option value="">Please select Doctor Name</option>
-                                    <?php foreach ($all_doctors as $doc_name): ?>
-                                        <option value="<?php echo htmlspecialchars($doc_name); ?>"><?php echo htmlspecialchars($doc_name); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <div class="search-wrapper">
+                                    <input type="text" name="name" id="doctorSearchInput" class="form-control border-1 shadow-none py-2 text-muted" placeholder="Type or select Doctor Name" autocomplete="off">
+                                    <div id="doctorSuggestions" class="suggestion-list"></div>
+                                </div>
+
                             </div>
                             <div class="mt-4 text-end">
                                 <button type="submit" class="btn text-white px-4" style="background-color: #17a2b8;">Search</button>
@@ -337,6 +336,50 @@ if ($name_results) {
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const doctorNames = <?php echo json_encode($all_doctors); ?>;
+        const searchInput = document.getElementById('doctorSearchInput');
+        const suggestionsBox = document.getElementById('doctorSuggestions');
+
+        if (searchInput && suggestionsBox) {
+            searchInput.addEventListener('input', function() {
+                const val = this.value.toLowerCase();
+                suggestionsBox.innerHTML = '';
+                if (!val) {
+                    suggestionsBox.style.display = 'none';
+                    return;
+                }
+
+                const matches = doctorNames.filter(name => name.toLowerCase().includes(val));
+                if (matches.length > 0) {
+                    matches.forEach(name => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.textContent = name;
+                        div.onclick = function() {
+                            searchInput.value = name;
+                            suggestionsBox.style.display = 'none';
+                        };
+                        suggestionsBox.appendChild(div);
+                    });
+                    suggestionsBox.style.display = 'block';
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+            
+            searchInput.addEventListener('focus', function() {
+                if(this.value.length > 0) suggestionsBox.style.display = 'block';
+            });
+        }
+    </script>
+
 </body>
 
 </html>

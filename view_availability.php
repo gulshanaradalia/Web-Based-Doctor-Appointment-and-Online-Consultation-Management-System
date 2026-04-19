@@ -89,20 +89,20 @@ $stmt->close();
                 <ul class="navbar-nav ms-auto me-3">
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="doctor_search.php">Find Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="doctor_search.php">Find Doctors</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link btn btn-light btn-sm text-primary px-3" href="register.php">Online Appointment</a></li>
+                    <li class="nav-item"><a class="nav-link" href="online_appointment.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <header class="availability-header text-center shadow-sm">
+    <header class="availability-header text-center shadow-sm" style="margin-top: 56px;">
         <div class="container">
             <h1 class="display-5 fw-bold"><?php echo htmlspecialchars($doctor['name']); ?></h1>
-            <p class="lead mb-0"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['hospital']); ?></p>
+            <p class="lead mb-0"><?php echo htmlspecialchars($doctor['specialty']); ?> • <?php echo htmlspecialchars($doctor['location']); ?></p>
             <div class="mt-3">
                 <span class="badge bg-light text-primary py-2 px-3 rounded-pill shadow-sm">
                     <i class="bi bi-geo-alt-fill me-1"></i> <?php echo htmlspecialchars($doctor['location']); ?>
@@ -161,26 +161,12 @@ $stmt->close();
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light py-5">
-        <div class="container">
-            <div class="row gy-4">
-                <div class="col-md-6 text-center text-md-start">
-                    <h5 class="fw-bold text-white mb-3">HealthTech</h5>
-                    <p class="text-muted mb-0">Providing accessible and efficient digital healthcare services for a healthier community.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <h5 class="fw-bold text-white mb-3">Stay Connected</h5>
-                    <div class="d-flex justify-content-center justify-content-md-end gap-3">
-                        <a href="#" class="text-primary fs-3"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-info fs-3"><i class="bi bi-twitter"></i></a>
-                        <a href="#" class="text-danger fs-3"><i class="bi bi-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <hr class="my-4 border-secondary opacity-25">
-            <div class="text-center text-muted small">
-                © <?php echo date("Y"); ?> HealthTech Management System. All rights reserved.
-            </div>
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container text-center">
+            <h5>Stay Connected</h5>
+            <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
+            <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
+            <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
         </div>
     </footer>
 

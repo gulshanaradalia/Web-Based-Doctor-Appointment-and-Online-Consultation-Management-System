@@ -22,7 +22,7 @@ $stmt = $conn->prepare("SELECT a.id, a.slot_time, a.status, a.appointment_type, 
                         JOIN users u ON a.doctor_id = u.id 
                         LEFT JOIN appointment_confirmations ac ON a.id = ac.appointment_id 
                         WHERE a.patient_id = ? 
-                        ORDER BY a.slot_time DESC");
+                        ORDER BY a.id DESC");
 $stmt->bind_param('i', $patient_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -284,17 +284,22 @@ $notif_stmt->close();
                                                         $slotTime = strtotime($apt['slot_time']);
                                                         $now = time();
                                                         $diff = ($slotTime - $now) / 60;
-                                                        if ($apt['status'] === 'approved') {
-                                                            if (isset($apt['appointment_type']) && $apt['appointment_type'] === 'online') {
-                                                                if ($diff <= 15 && $diff >= -60) {
-                                                                    echo '<div class="mt-2"><a href="consultation.php?doctor_id='.$apt['doctor_id'].'" class="btn btn-sm btn-success w-100"><i class="bi bi-camera-video"></i> Join Consultation</a></div>';
-                                                                } else if ($diff > 15) {
-                                                                    echo '<div class="mt-2 text-center small text-muted border rounded p-1">Starts at '.date('h:i A', $slotTime).'<br>(Join button will appear 15 mins before)</div>';
-                                                                } else {
-                                                                    echo '<div class="mt-2 text-center small text-danger border rounded p-1">Slot Expired</div>';
-                                                                }
+                                                        
+                                                        // Always show the consultation type
+                                                        if (isset($apt['appointment_type']) && trim(strtolower($apt['appointment_type'])) === 'online') {
+                                                            echo '<div class="mt-2 text-center small text-primary border border-primary-subtle rounded p-1 bg-primary-subtle fw-bold"><i class="bi bi-camera-video"></i> Online Call</div>';
+                                                        } else {
+                                                            echo '<div class="mt-2 text-center small text-info border border-info-subtle rounded p-1 bg-info-subtle fw-bold"><i class="bi bi-hospital"></i> Offline Visit</div>';
+                                                        }
+
+                                                        // Show Join button/messages only if Approved
+                                                        if ($apt['status'] === 'approved' && isset($apt['appointment_type']) && trim(strtolower($apt['appointment_type'])) === 'online') {
+                                                            if ($diff <= 15 && $diff >= -60) {
+                                                                echo '<div class="mt-2"><a href="consultation.php?doctor_id='.$apt['doctor_id'].'" class="btn btn-sm btn-success w-100 py-2 fw-bold shadow-sm"><i class="bi bi-camera-video-fill"></i> Join Consultation</a></div>';
+                                                            } else if ($diff > 15) {
+                                                                echo '<div class="mt-1 text-center small text-muted">Starts at '.date('h:i A', $slotTime).'<br><span style="font-size:0.7rem;">(Button active 15m before)</span></div>';
                                                             } else {
-                                                                echo '<div class="mt-2 text-center small text-info border border-info rounded p-1 bg-light"><i class="bi bi-hospital"></i> Offline Visit</div>';
+                                                                echo '<div class="mt-1 text-center small text-danger fw-bold">Slot Expired</div>';
                                                             }
                                                         }
                                                     ?>
@@ -496,6 +501,16 @@ $notif_stmt->close();
             </div>
         </div>
     </div>
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container text-center">
+            <h5>Stay Connected</h5>
+            <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
+            <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
+            <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

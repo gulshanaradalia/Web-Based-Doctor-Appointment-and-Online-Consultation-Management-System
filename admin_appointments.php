@@ -52,7 +52,7 @@ $res = $conn->query("SELECT a.*, p.name as patient_name, d.name as doctor_name
                     FROM appointments a
                     JOIN users p ON a.patient_id = p.id
                     JOIN users d ON a.doctor_id = d.id
-                    ORDER BY a.slot_time DESC LIMIT 100");
+                    ORDER BY a.id DESC LIMIT 100");
 while ($row = $res->fetch_assoc()) {
     $appointments[] = $row;
 }

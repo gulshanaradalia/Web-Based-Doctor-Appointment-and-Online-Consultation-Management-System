@@ -78,6 +78,7 @@ $stmt->close();
 </head>
 
 <body>
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="index.php">
@@ -92,63 +93,74 @@ $stmt->close();
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="index.php#about">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctor_search.php">Find Doctors</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="doctor_dashboard.php"><i class="bi bi-speedometer2"></i> My Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="schedule_slot.php"><i class="bi bi-calendar-check"></i> Schedule Slots</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.php"><i class="bi bi-person-circle"></i> Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="online_appointment.php">Online Appointment</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    <main class="container mt-5 pt-5">
-        <h2>Schedule Slot Management</h2>
+    <main class="container mt-5 pt-5 mb-5 flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Schedule Slot Management</h2>
+            <a href="doctor_dashboard.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+        </div>
 
-        <?php if ($message): ?><div class="alert alert-success"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
-        <?php if ($error): ?><div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
+        <?php if ($message): ?><div class="alert alert-success border-0 shadow-sm"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
+        <?php if ($error): ?><div class="alert alert-danger border-0 shadow-sm"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
-        <form method="POST" class="row g-3 mb-4">
-            <div class="col-md-4">
-                <label class="form-label">Add New Slot</label>
-                <input type="datetime-local" name="slot_time" class="form-control" required>
-            </div>
-            <div class="col-md-2 align-self-end">
-                <button type="submit" name="add_slot" class="btn btn-accent w-100">Add Slot</button>
-            </div>
-        </form>
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <form method="POST" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Add New Slot</label>
+                    <input type="datetime-local" name="slot_time" class="form-control" required>
+                </div>
+                <div class="col-md-3 align-self-end">
+                    <button type="submit" name="add_slot" class="btn btn-primary w-100 rounded-pill px-4">Add Slot</button>
+                </div>
+            </form>
+        </div>
 
-        <h4>All Scheduled Slots</h4>
+        <h4 class="mb-3 fw-bold">All Scheduled Slots</h4>
         <?php if (empty($slots)): ?>
-            <div class="alert alert-info">No schedule slots found.</div>
+            <div class="alert alert-info border-0 shadow-sm">No schedule slots found.</div>
         <?php else: ?>
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Slot Time</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($slots as $idx => $slot): ?>
+            <div class="table-responsive">
+                <table class="table table-hover bg-white shadow-sm rounded-4 overflow-hidden align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td><?php echo $idx + 1; ?></td>
-                            <td><?php echo htmlspecialchars((new DateTime($slot['slot_time']))->format('D, Y-m-d g:i A')); ?></td>
-                            <td><?php echo ucfirst($slot['slot_status']); ?></td>
-                            <td>
-                                <a href="schedule_slot.php?action=delete&id=<?php echo $slot['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Delete this slot?');">Delete</a>
-                            </td>
+                            <th class="ps-3">#</th>
+                            <th>Slot Time</th>
+                            <th>Status</th>
+                            <th class="pe-3">Action</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($slots as $idx => $slot): ?>
+                            <tr>
+                                <td class="ps-3"><?php echo $idx + 1; ?></td>
+                                <td><i class="bi bi-calendar-event me-2 text-primary"></i><?php echo htmlspecialchars((new DateTime($slot['slot_time']))->format('D, Y-m-d g:i A')); ?></td>
+                                <td>
+                                    <?php if ($slot['slot_status'] === 'available'): ?>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle"><?php echo ucfirst($slot['slot_status']); ?></span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"><?php echo ucfirst($slot['slot_status']); ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="pe-3">
+                                    <a href="schedule_slot.php?action=delete&id=<?php echo $slot['id']; ?>" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Delete this slot?');"><i class="bi bi-trash me-1"></i>Delete</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         <?php endif; ?>
-
-        <a href="doctor_dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
     </main>
-    <footer class="bg-dark text-light py-4 mt-5">
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-auto">
         <div class="container text-center">
             <h5>Stay Connected</h5>
             <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
@@ -159,4 +171,4 @@ $stmt->close();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
-</htm
+</html>

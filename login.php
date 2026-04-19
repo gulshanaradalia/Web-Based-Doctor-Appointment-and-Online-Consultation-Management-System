@@ -57,30 +57,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <title>Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <style>
-    body {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 5rem 20px 0;
-    }
+    <style>
+        body {
+            background: #eef3ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 5rem;
+        }
 
-    .page-content {
-      flex: 1 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding-bottom: 2rem;
-    }
+        .page-content {
+            flex: 1 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 20px;
+        }
 
-    .card {
-      max-width: 420px;
-      width: 100%;
-      border-radius: 12px;
-    }
-  </style>
+        .card {
+            max-width: 420px;
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid #dbe0eb;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
+        }
+    </style>
 </head>
 
 <body>
@@ -139,14 +140,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       </form>
     </div>
   </div>
-  <footer class="bg-dark text-light py-4 w-100">
-    <div class="container text-center">
-      <h5>Stay Connected</h5>
-      <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
-      <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
-      <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
-    </div>
-  </footer>
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container text-center">
+            <h5>Stay Connected</h5>
+            <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
+            <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
+            <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
+        </div>
+    </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

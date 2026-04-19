@@ -1,4 +1,85 @@
+/* Premium SweetAlert2 Custom Styling */
+.swal2-popup {
+    border-radius: 24px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+.swal2-title {
+    color: #2c3e50 !important;
+    font-weight: 700 !important;
+}
+
+.swal2-confirm {
+    background: linear-gradient(135deg, #4a80f0 0%, #50c7c7 100%) !important;
+    border-radius: 12px !important;
+    padding: 12px 35px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(74, 128, 240, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-confirm:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(74, 128, 240, 0.4) !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #50c7c7 !important;
+}
+
+.swal2-icon.swal2-success {
+    border-color: #50c7c7 !important;
+}
+
+/* Custom Search Suggestions */
+.search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.suggestion-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    display: none;
+    padding: 0;
+    margin-top: 5px;
+    border: 1px solid #e2e8f0;
+}
+
+.suggestion-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    color: #4a5568;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #f8fafc;
+    color: #17a2b8;
+    padding-left: 25px;
+}
+
 /* ========== Custom styles for Doctor Appointment application ========== */
+
 
 /* ---------- Color palette (CSS variables) ---------- */
 :root {

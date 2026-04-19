@@ -23,11 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $phone = trim($_POST['phone']);
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         $specialty = trim($_POST['specialty']);
-        $hospital = trim($_POST['hospital']);
+        $location = trim($_POST['location']);
         $fee = floatval($_POST['fee']);
 
-        $stmt = $conn->prepare("INSERT INTO users (name, email, phone, role, specialty, hospital, consultation_fee, password_hash, status) VALUES (?, ?, ?, 'doctor', ?, ?, ?, ?, 'active')");
-        $stmt->bind_param('sssssds', $name, $email, $phone, $specialty, $hospital, $fee, $password);
+        $stmt = $conn->prepare("INSERT INTO users (name, email, phone, role, specialty, location, consultation_fee, password_hash, status) VALUES (?, ?, ?, 'doctor', ?, ?, ?, ?, 'active')");
+        $stmt->bind_param('sssssds', $name, $email, $phone, $specialty, $location, $fee, $password);
         
         if ($stmt->execute()) {
             $message = "Doctor added successfully!";
@@ -44,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = intval($_POST['id']);
         $name = trim($_POST['name']);
         $specialty = trim($_POST['specialty']);
-        $hospital = trim($_POST['hospital']);
+        $location = trim($_POST['location']);
         $fee = floatval($_POST['fee']);
 
-        $stmt = $conn->prepare("UPDATE users SET name = ?, specialty = ?, hospital = ?, consultation_fee = ? WHERE id = ? AND role = 'doctor'");
-        $stmt->bind_param('sssdi', $name, $specialty, $hospital, $fee, $id);
+        $stmt = $conn->prepare("UPDATE users SET name = ?, specialty = ?, location = ?, consultation_fee = ? WHERE id = ? AND role = 'doctor'");
+        $stmt->bind_param('sssdi', $name, $specialty, $location, $fee, $id);
         
         if ($stmt->execute()) {
             $message = "Doctor information updated!";
@@ -183,7 +183,7 @@ while ($row = $res->fetch_assoc()) {
                                         </td>
                                         <td><span class="badge bg-info text-dark"><?php echo htmlspecialchars($d['specialty'] ?: 'N/A'); ?></span></td>
                                         <td><?php echo number_format($d['consultation_fee'], 2); ?></td>
-                                        <td><?php echo htmlspecialchars($d['hospital'] ?: 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($d['location'] ?: 'N/A'); ?></td>
                                         <td>
                                             <span class="badge bg-<?php echo $d['status'] === 'active' ? 'success' : 'danger'; ?>">
                                                 <?php echo ucfirst($d['status']); ?>
@@ -276,7 +276,7 @@ while ($row = $res->fetch_assoc()) {
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Chamber / Hospital</label>
-                        <input type="text" name="hospital" class="form-control">
+                        <input type="text" name="location" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -314,7 +314,7 @@ while ($row = $res->fetch_assoc()) {
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Chamber / Hospital</label>
-                        <input type="text" name="hospital" id="edit_hospital" class="form-control">
+                        <input type="text" name="location" id="edit_location" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -331,7 +331,7 @@ while ($row = $res->fetch_assoc()) {
             document.getElementById('edit_id').value = doctor.id;
             document.getElementById('edit_name').value = doctor.name;
             document.getElementById('edit_specialty').value = doctor.specialty || '';
-            document.getElementById('edit_hospital').value = doctor.hospital || '';
+            document.getElementById('edit_location').value = doctor.location || '';
             document.getElementById('edit_fee').value = doctor.consultation_fee;
             
             new bootstrap.Modal(document.getElementById('editDoctorModal')).show();

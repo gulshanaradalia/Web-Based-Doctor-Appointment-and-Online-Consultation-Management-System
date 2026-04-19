@@ -77,12 +77,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link href="style.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #eef3ff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 5rem 2rem 0;
+            padding-top: 5rem;
         }
 
         .page-content {
@@ -90,23 +89,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-bottom: 2rem;
+            padding: 2.5rem 20px;
         }
-
 
         .auth-card {
             max-width: 500px;
             width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: none;
+            border-radius: 16px;
+            border: 1px solid #dbe0eb;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
+            background: #fff;
         }
-
 
         .card-body {
-            padding: 3rem;
+            padding: 2.5rem;
         }
-
 
         .form-control,
         .form-select {
@@ -116,31 +113,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             font-size: 0.95rem;
         }
 
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
-
-
         .btn-register {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000;
             border: none;
             border-radius: 8px;
             padding: 0.75rem;
             font-weight: 600;
-            transition: transform 0.2s;
+            transition: all 0.2s;
             color: white;
         }
-
 
         .btn-register:hover {
-            transform: translateY(-2px);
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            opacity: 0.9;
             color: white;
         }
-
 
         .form-label {
             font-weight: 600;
@@ -148,12 +134,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             margin-bottom: 0.5rem;
         }
 
-
         .required::after {
             content: " *";
             color: #dc3545;
         }
-
 
         .login-link {
             text-align: center;
@@ -161,30 +145,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             color: #666;
         }
 
-
         .login-link a {
-            color: #667eea;
+            color: var(--bs-primary);
             text-decoration: none;
             font-weight: 600;
         }
 
-
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-
-
         h2 {
-            color: #333;
-            margin-bottom: 0.5rem;
             font-weight: 700;
+            color: #22306b;
         }
-
 
         .subtitle {
-            color: #999;
+            color: #777;
             margin-bottom: 2rem;
-            font-size: 0.95rem;
         }
     </style>
 </head>

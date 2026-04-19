@@ -104,7 +104,18 @@ if ($name_results) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
+        .swal2-popup {
+            border-radius: 20px !important;
+            font-family: 'Open Sans', sans-serif !important;
+        }
+        .swal2-confirm {
+            background: #17a2b8 !important;
+            border-radius: 8px !important;
+            padding: 10px 30px !important;
+        }
         body { padding-top: 80px; background-color: #f8fafc; }
         .nav-pills .nav-link.active { background-color: transparent !important; color: #17a2b8 !important; font-weight: bold; }
         .card-custom { border-radius: 12px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -144,11 +155,8 @@ if ($name_results) {
 
             <!-- Main Content Area -->
             <div class="col-md-9 ps-4">
-                <?php if ($message): ?>
-                    <div class="alert alert-<?php echo $msg_type; ?> shadow-sm text-center fw-bold mb-4">
-                        <?php echo htmlspecialchars($message); ?>
-                    </div>
-                <?php endif; ?>
+                <!-- Notification will be handled by SweetAlert2 -->
+
 
                 <!-- Step 1: Search Section -->
                 <div class="tab-content mb-5" id="v-pills-tabContent">
@@ -157,12 +165,11 @@ if ($name_results) {
                         <div class="p-3 mb-4 text-center banner-teal">FIND YOUR DOCTOR</div>
                         <form method="get">
                             <label class="form-label mb-2">Search by Doctor Name</label>
-                            <select name="name" class="form-select mb-3">
-                                <option value="">Select Doctor Name</option>
-                                <?php foreach ($all_doctor_names as $dn): ?>
-                                    <option value="<?php echo htmlspecialchars($dn); ?>"><?php echo htmlspecialchars($dn); ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                             <div class="search-wrapper">
+                                 <input type="text" name="name" id="onlineDoctorSearch" class="form-control mb-3" placeholder="Type or select Doctor Name" autocomplete="off">
+                                 <div id="onlineSuggestions" class="suggestion-list" style="top: 45px;"></div>
+                             </div>
+
                             <button type="submit" class="btn btn-premium px-4 float-end">Filter List</button>
                         </form>
                     </div>
@@ -264,5 +271,69 @@ if ($name_results) {
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const allDocs = <?php echo json_encode($all_doctor_names); ?>;
+        const onlineInput = document.getElementById('onlineDoctorSearch');
+        const onlineSuggestBox = document.getElementById('onlineSuggestions');
+
+        if (onlineInput && onlineSuggestBox) {
+            onlineInput.addEventListener('input', function() {
+                const val = this.value.toLowerCase();
+                onlineSuggestBox.innerHTML = '';
+                if (!val) {
+                    onlineSuggestBox.style.display = 'none';
+                    return;
+                }
+
+                const matches = allDocs.filter(name => name.toLowerCase().includes(val));
+                if (matches.length > 0) {
+                    matches.forEach(name => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.textContent = name;
+                        div.onclick = function() {
+                            onlineInput.value = name;
+                            onlineSuggestBox.style.display = 'none';
+                        };
+                        onlineSuggestBox.appendChild(div);
+                    });
+                    onlineSuggestBox.style.display = 'block';
+                } else {
+                    onlineSuggestBox.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!onlineInput.contains(e.target) && !onlineSuggestBox.contains(e.target)) {
+                    onlineSuggestBox.style.display = 'none';
+                }
+            });
+            
+            onlineInput.addEventListener('focus', function() {
+                if(this.value.length > 0) onlineSuggestBox.style.display = 'block';
+            });
+        }
+    </script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <?php if ($message): ?>
+    <script>
+        Swal.fire({
+            title: '<?php echo $msg_type === "success" ? "Success!" : "Notice"; ?>',
+            text: <?php echo json_encode($message); ?>,
+            icon: '<?php echo $msg_type; ?>',
+            confirmButtonText: 'OK',
+            allowOutsideClick: false,
+            backdrop: `rgba(23, 162, 184, 0.1)`
+        }).then((result) => {
+            if (result.isConfirmed && '<?php echo $msg_type; ?>' === 'success') {
+                window.location.href = 'patient_dashboard.php';
+            }
+        });
+    </script>
+    <?php endif; ?>
+
 </body>
 </html>

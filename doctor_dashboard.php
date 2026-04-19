@@ -113,14 +113,7 @@ $stmt = $conn->prepare("SELECT
                         FROM appointments a
                         JOIN users u ON a.patient_id = u.id
                         WHERE a.doctor_id = ?
-                        ORDER BY 
-                            CASE 
-                                WHEN a.status = 'pending' THEN 1
-                                WHEN a.status = 'approved' THEN 2
-                                WHEN a.status = 'rejected' THEN 3
-                                ELSE 4
-                            END,
-                            a.slot_time ASC");
+                        ORDER BY a.id DESC");
 $stmt->bind_param('i', $doctor_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -280,59 +273,80 @@ $notif_stmt->close();
                                             </span>
                                         </td>
                                         <td>
-                                            <div class="d-flex gap-2 flex-wrap">
-                                                <!-- Approve Button -->
-                                                <?php if ($apt['status'] !== 'approved'): ?>
-                                                    <form method="POST" class="m-0" onsubmit="return confirm('Approve this appointment?');">
-                                                        <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
-                                                        <input type="hidden" name="action" value="approve">
-                                                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                                                    </form>
-                                                <?php endif; ?>
+                                            <div class="d-flex flex-column gap-2 w-100">
+                                                <!-- Consultation Type Label (Always Visible) -->
+                                                <div class="consultation-type-badge mb-1">
+                                                    <?php if (isset($apt['appointment_type']) && trim(strtolower($apt['appointment_type'])) === 'online'): ?>
+                                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle w-100 py-2">
+                                                            <i class="bi bi-camera-video-fill me-1"></i> ONLINE CALL
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-info-subtle text-info border border-info-subtle w-100 py-2">
+                                                            <i class="bi bi-hospital-fill me-1"></i> OFFLINE VISIT
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </div>
 
-                                                <!-- Reject Button -->
-                                                <?php if ($apt['status'] !== 'rejected'): ?>
-                                                    <form method="POST" class="m-0" onsubmit="return confirm('Reject this appointment?');">
-                                                        <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
-                                                        <input type="hidden" name="action" value="reject">
-                                                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                                                    </form>
-                                                <?php endif; ?>
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    <!-- Approve Button -->
+                                                    <?php if ($apt['status'] !== 'approved'): ?>
+                                                        <form method="POST" class="m-0" onsubmit="return confirm('Approve this appointment?');">
+                                                            <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
+                                                            <input type="hidden" name="action" value="approve">
+                                                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                                        </form>
+                                                    <?php endif; ?>
 
-                                                <!-- Status Message for the Approved Request -->
-                                                <?php if ($apt['status'] === 'approved'): ?>
-                                                    <small class="text-muted align-self-center">Approved request can still be rejected</small>
+                                                    <!-- Reject Button -->
+                                                    <?php if ($apt['status'] !== 'rejected'): ?>
+                                                        <form method="POST" class="m-0" onsubmit="return confirm('Reject this appointment?');">
+                                                            <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
+                                                            <input type="hidden" name="action" value="reject">
+                                                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                                        </form>
+                                                    <?php endif; ?>
+
+                                                    <!-- Status Message for Approved/Rejected -->
+                                                    <?php if ($apt['status'] === 'approved'): ?>
+                                                        <small class="text-muted align-self-center">Approved request can still be rejected</small>
+                                                    <?php elseif ($apt['status'] === 'rejected'): ?>
+                                                        <small class="text-muted align-self-center">Rejected request can still be approved</small>
+                                                    <?php endif; ?>
+                                                </div>
+
+                                                <!-- Online Consultation Actions (Only if Approved) -->
+                                                <?php if ($apt['status'] === 'approved' && isset($apt['appointment_type']) && trim(strtolower($apt['appointment_type'])) === 'online'): ?>
                                                     <?php 
                                                         $slotTime = strtotime($apt['slot_time']);
                                                         $now = time();
                                                         $diff = ($slotTime - $now) / 60;
-                                                        
-                                                        if (isset($apt['appointment_type']) && $apt['appointment_type'] === 'online') {
-                                                            // Always visible consultation actions
-                                                            echo '<hr class="my-2">';
-                                                            echo '<div class="text-center fw-bold text-primary mb-1" style="font-size:0.8rem;">ONLINE CONSULTATION</div>';
-                                                            
-                                                            // Time-locked Join button
-                                                            if ($diff <= 15 && $diff >= -60) {
-                                                                echo '<a href="consultation.php?doctor_id='.$doctor_id.'&patient_id='.$apt['patient_id'].'" class="btn btn-sm btn-success w-100 mb-2"><i class="bi bi-camera-video"></i> Join Live Call</a>';
-                                                            } else if ($diff > 15) {
-                                                                echo '<div class="mb-2 text-center small text-muted border rounded p-1 w-100 bg-light">Call starts '.date('h:i A', $slotTime).'</div>';
-                                                            } else {
-                                                                echo '<div class="mb-2 text-center small text-danger border rounded p-1 w-100 bg-light">Call Slot Expired</div>';
-                                                            }
-                                                            
-                                                            // Unlocked Report and Prescription buttons
-                                                            echo '<div class="d-flex gap-1">';
-                                                            echo '<button type="button" class="btn btn-sm btn-outline-info w-50" onclick="viewPatientReport('.$doctor_id.', '.$apt['patient_id'].')" title="View Patient Report"><i class="bi bi-file-earmark-medical"></i> Report</button>';
-                                                            echo '<button type="button" class="btn btn-sm btn-outline-primary w-50" onclick="openRxModal('.$doctor_id.', '.$apt['patient_id'].', \''.htmlspecialchars(addslashes($apt['patient_name'])).'\')" title="Write Prescription"><i class="bi bi-pencil-square"></i> Prescribe</button>';
-                                                            echo '</div>';
-                                                        } else {
-                                                            echo '<hr class="my-2">';
-                                                            echo '<div class="text-center fw-bold text-info mb-1" style="font-size:0.8rem;"><i class="bi bi-hospital"></i> OFFLINE VISIT</div>';
-                                                        }
                                                     ?>
-                                                <?php elseif ($apt['status'] === 'rejected'): ?>
-                                                    <small class="text-muted align-self-center">Rejected request can still be approved</small>
+                                                    <div class="p-2 border rounded-3 bg-light mt-2">
+                                                        <div class="text-center fw-bold text-primary mb-2" style="font-size:0.75rem;">LIVE CONSULTATION</div>
+                                                        
+                                                        <?php if ($diff <= 15 && $diff >= -60): ?>
+                                                            <a href="consultation.php?doctor_id=<?php echo $doctor_id; ?>&patient_id=<?php echo $apt['patient_id']; ?>" class="btn btn-sm btn-success w-100 mb-2">
+                                                                <i class="bi bi-camera-video"></i> Join Live Call
+                                                            </a>
+                                                        <?php elseif ($diff > 15): ?>
+                                                            <div class="mb-2 text-center small text-muted border rounded p-1 w-100 bg-white">
+                                                                Call starts <?php echo date('h:i A', $slotTime); ?>
+                                                            </div>
+                                                        <?php else: ?>
+                                                            <div class="mb-2 text-center small text-danger border rounded p-1 w-100 bg-white fw-bold">
+                                                                Call Slot Expired
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        
+                                                        <div class="d-flex gap-2">
+                                                            <button type="button" class="btn btn-xs btn-outline-info flex-grow-1 py-1" onclick="viewPatientReport(<?php echo $doctor_id; ?>, <?php echo $apt['patient_id']; ?>)" style="font-size: 0.75rem;">
+                                                                <i class="bi bi-file-medical"></i> Report
+                                                            </button>
+                                                            <button type="button" class="btn btn-xs btn-outline-primary flex-grow-1 py-1" onclick="openRxModal(<?php echo $doctor_id; ?>, <?php echo $apt['patient_id']; ?>, '<?php echo htmlspecialchars(addslashes($apt['patient_name'])); ?>')" style="font-size: 0.75rem;">
+                                                                <i class="bi bi-pencil-square"></i> Rx
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
@@ -483,5 +497,16 @@ $notif_stmt->close();
             </div>
         </div>
     </div>
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container text-center">
+            <h5>Stay Connected</h5>
+            <a href="#" class="text-primary me-2"><i class="bi bi-facebook fs-3"></i></a>
+            <a href="#" class="text-info me-2"><i class="bi bi-twitter fs-3"></i></a>
+            <a href="#" class="text-danger"><i class="bi bi-instagram fs-3"></i></a>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
