@@ -42,6 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'
         } elseif ($appt['status'] === $new_status) {
             $message = "Appointment is already " . ucfirst($new_status) . ".";
             $message_type = 'warning';
+        } elseif ($action === 'reject' && $appt['status'] === 'approved') {
+            $message = "Approved appointments cannot be rejected.";
+            $message_type = 'danger';
         } else {
             // Update appointment status to approved or rejected
             $updateStmt = $conn->prepare("UPDATE appointments 
@@ -298,7 +301,7 @@ $notif_stmt->close();
                                                     <?php endif; ?>
 
                                                     <!-- Reject Button -->
-                                                    <?php if ($apt['status'] !== 'rejected'): ?>
+                                                    <?php if ($apt['status'] === 'pending'): ?>
                                                         <form method="POST" class="m-0" onsubmit="return confirm('Reject this appointment?');">
                                                             <input type="hidden" name="id" value="<?php echo $apt['id']; ?>">
                                                             <input type="hidden" name="action" value="reject">
@@ -307,9 +310,7 @@ $notif_stmt->close();
                                                     <?php endif; ?>
 
                                                     <!-- Status Message for Approved/Rejected -->
-                                                    <?php if ($apt['status'] === 'approved'): ?>
-                                                        <small class="text-muted align-self-center">Approved request can still be rejected</small>
-                                                    <?php elseif ($apt['status'] === 'rejected'): ?>
+                                                    <?php if ($apt['status'] === 'rejected'): ?>
                                                         <small class="text-muted align-self-center">Rejected request can still be approved</small>
                                                     <?php endif; ?>
                                                 </div>
